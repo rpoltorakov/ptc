@@ -48,6 +48,7 @@ export default function PivotTableC(props: PivotTableCProps) {
     // setTimeout(() => {
     //   setData([])
     // }, 10000)
+    console.log(props)
   },[])
   React.useEffect(() => {console.log('data is changed:', data)}, [data])
 
