@@ -87,7 +87,7 @@ const config: ControlPanelConfig = {
             name: 'cols',
             config: {
               ...sharedControls.groupby,
-              label: t('Columns ptc'),
+              label: t('Columns'),
               description: t('Columns to group by'),
             },
           },
@@ -98,7 +98,7 @@ const config: ControlPanelConfig = {
             name: 'rows',
             config: {
               ...sharedControls.groupby,
-              label: t('Rows ptc'),
+              label: t('Rows'),
               description: t('Rows to group by'),
             },
           },
@@ -114,7 +114,7 @@ const config: ControlPanelConfig = {
             },
           },
         ],
-        // ['adhoc_filters'],
+        ['adhoc_filters'],
         [
           {
             name: 'row_limit',
@@ -122,6 +122,25 @@ const config: ControlPanelConfig = {
           },
         ],
       ],
+      
+    },
+    {
+      label: 'Subtotal',
+      expanded: true,
+      tabOverride: 'data',
+      controlSetRows: [
+        [
+          {
+            name: 'aggregateFormula',
+            config: {
+              type: 'TextControl',
+              label: 'Aggregation formula',
+              description: 'Aggregation formula to compute the subtotals',
+              renderTrigger: true
+            }
+          }
+        ]
+      ]
     },
     {
       label: t('Hello Controls!'),

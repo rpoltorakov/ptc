@@ -2,6 +2,9 @@ import React, { useEffect, createRef } from 'react';
 import { styled } from '@superset-ui/core';
 import { PivotTableCProps, PivotTableCStylesProps } from './types';
 import { ApiV1 } from '@superset-ui/core';
+import buildQuery from './plugin/buildQuery';
+import PivotTableUI from './plugin/pivotTable/PivotTableUI'
+// import from './plugin/pivotTable/PivotTableUI'
 
 const Styles = styled.div<PivotTableCStylesProps>`
   background-color: ${({ theme }) => theme.colors.secondary.light2};
@@ -25,13 +28,6 @@ const Styles = styled.div<PivotTableCStylesProps>`
   }
 `;
 
-/**
- * ******************* WHAT YOU CAN BUILD HERE *******************
- *  In essence, a chart is given a few key ingredients to work with:
- *  * Data: provided via `props.data`
- *  * A DOM element
- *  * FormData (your controls!) provided as props by transformProps.ts
- */
 
 export default function PivotTableC(props: PivotTableCProps) {
   console.log('props in root', props)
@@ -40,17 +36,12 @@ export default function PivotTableC(props: PivotTableCProps) {
     height, 
     width, 
     setDataMask,
-    
   } = props;
+
   const [data, setData] = React.useState([])
   React.useEffect(() => {
     setData(props.data)
-    // setTimeout(() => {
-    //   setData([])
-    // }, 10000)
-    console.log(props)
-  },[])
-  React.useEffect(() => {console.log('data is changed:', data)}, [data])
+  },[props])
 
   const rootElem = createRef<HTMLDivElement>();
   const [metric, setMetric] = React.useState(0.0)
@@ -92,7 +83,8 @@ export default function PivotTableC(props: PivotTableCProps) {
     setMetric(sum)
   }
 
-
+console.log('Styles', PivotTableUI)
+  console.log(data)
   return (
     <Styles
       ref={rootElem}
@@ -101,12 +93,22 @@ export default function PivotTableC(props: PivotTableCProps) {
       height={height}
       width={width}
     >
-      <button onClick={clickHandler}>button1</button>
+      {/* <button onClick={clickHandler}>button1</button>
       <button onClick={clickHandler1}>button2</button>
       <span>Custom metric:</span>
       <span>{metric}</span>
       <h3>{props.headerText}</h3>
-      <pre>${JSON.stringify(data, null, 2)}</pre>
+      <pre>${JSON.stringify(data, null, 2)}</pre> */}
+
+
+      <PivotTableUI
+        data={data}
+        // onChange={s => console.log(s)}
+      />
+
+
     </Styles>
+
+    
   );
 }
