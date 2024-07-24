@@ -47,8 +47,7 @@ export default function PivotTableC(props: PivotTableCProps) {
   const [metric, setMetric] = React.useState(0.0)
 
   async function clickHandler() {
-    // console.log(getChartData(buildQuery(props.formData)))
-    // console.log(ApiV1)
+
     const newFormData = {
       ...props.formData,
       cols: ['genre']
