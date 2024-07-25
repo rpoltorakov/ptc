@@ -9,22 +9,32 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'cols',
+            name: 'dimensions',
             config: {
               ...sharedControls.groupby,
-              label: t('Columns'),
-              description: t('Columns to group by'),
+              label: t('Dimensions pool'),
+              description: t('Dimensions available for grouping'),
             },
           },
           
         ],
         [
           {
-            name: 'rows',
+            name: 'groupbyColumns',
+            config: {
+              ...sharedControls.groupby,
+              label: t('Columns'),
+              description: t('Columns to group by on the columns'),
+            },
+          },
+        ],
+        [
+          {
+            name: 'groupbyRows',
             config: {
               ...sharedControls.groupby,
               label: t('Rows'),
-              description: t('Rows to group by'),
+              description: t('Columns to group by on the rows'),
             },
           },
         ],

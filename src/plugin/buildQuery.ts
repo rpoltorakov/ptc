@@ -1,4 +1,9 @@
-import { buildQueryContext, QueryFormData } from '@superset-ui/core';
+import { 
+  AdhocColumn, 
+  buildQueryContext, 
+  QueryFormData,
+  ensureIsArray 
+} from '@superset-ui/core'; 
 
 /**
  * The buildQuery function is used to create an instance of QueryContext that's
@@ -17,16 +22,40 @@ import { buildQueryContext, QueryFormData } from '@superset-ui/core';
 
 export default function buildQuery(formData: QueryFormData) {
 
-  const { cols: groupby } = formData;
-  const { colsPool: colsPool } = formData;
+  // const { cols: groupby } = formData;
+  // const { colsPool: colsPool } = formData;
+  const { groupbyColumns=[], groupbyRows=[], extra_form_data } = formData;
+  const time_grain_sqla =
+    extra_form_data?.time_grain_sqla || formData.time_grain_sqla;
 
   return buildQueryContext(formData, (baseQueryObject: { ownState: any; }) => {
+    console.log('formData in BQ:', formData)
     const { ownState } = baseQueryObject
+
+    // columns to be used in query aggregation, not in UI
+    // need to be sent as "columns" field, result will be processed further
+    const columns = Array.from(
+      new Set([
+        ...ensureIsArray(groupbyColumns),
+        ...ensureIsArray(groupbyRows),
+      ]),
+    ).map(col => {
+      return {
+        timeGrain: time_grain_sqla,
+        columnType: 'BASE_AXIS',
+        sqlExpression: col,
+        label: col,
+        expressionType: 'SQL',
+      } as AdhocColumn;
+      return col
+    })
+    console.log('magic columns in BQ:', columns)
     return [
     {
       ...baseQueryObject,
-      groupby,
-      colsPool,
+      columns
+      // groupby,
+      // colsPool,
     },
   ]});
 }

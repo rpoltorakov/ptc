@@ -3,7 +3,7 @@ import { styled } from '@superset-ui/core';
 import { PivotTableCProps, PivotTableCStylesProps } from './types';
 import { ApiV1 } from '@superset-ui/core';
 import buildQuery from './plugin/buildQuery';
-import PivotTableUI from './plugin/pivotTable/PivotTableUI'
+// import PivotTableUI from './plugin/pivotTable/PivotTableUI'
 // import from './plugin/pivotTable/PivotTableUI'
 
 const Styles = styled.div<PivotTableCStylesProps>`
@@ -82,7 +82,6 @@ export default function PivotTableC(props: PivotTableCProps) {
     setMetric(sum)
   }
 
-console.log('Styles', PivotTableUI)
   console.log(data)
   return (
     <Styles
@@ -92,18 +91,19 @@ console.log('Styles', PivotTableUI)
       height={height}
       width={width}
     >
-      {/* <button onClick={clickHandler}>button1</button>
+      <div>Dimensions: <span style={{color: 'blue', fontSize: '20px'}}>{props.formData.dimensions.toString()}</span></div>
+      <button onClick={clickHandler}>button1</button>
       <button onClick={clickHandler1}>button2</button>
       <span>Custom metric:</span>
       <span>{metric}</span>
       <h3>{props.headerText}</h3>
-      <pre>${JSON.stringify(data, null, 2)}</pre> */}
+      <pre>${JSON.stringify(data, null, 2)}</pre>
 
 
-      <PivotTableUI
+    {/*}  <PivotTableUI
         data={data}
         // onChange={s => console.log(s)}
-      />
+      /> */}
 
 
     </Styles>

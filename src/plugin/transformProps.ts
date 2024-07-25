@@ -40,11 +40,46 @@ export default function transformProps(chartProps: ChartProps) {
     filterState,
     hooks: { setDataMask = () => {} }
   } = chartProps;
-  const { boldText, headerFontSize, headerText } = formData;
+  const { 
+    boldText,
+    headerFontSize, 
+    headerText,
+    dimensions, 
+    groupbyColumns, 
+    groupbyRows 
+  } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
 
-  console.log('formData via TransformProps.ts', formData);
+  // console.log('formData via TransformProps.ts', formData);
+  
+  // Собрать измерения использованные как дефолтные в один массив с пулом
+  const collectDefaultDimensions = (groupbyColumns: string[], groupbyRows: string[]) => {
+    // добавить если еще не существует
+    groupbyColumns.forEach((col) => {
+      if (dimensions.indexOf(col) === -1) {
+        dimensions.push(col);
+      }
+    })
+    groupbyRows.forEach((row) => {
+      if (dimensions.indexOf(row) === -1) {
+        dimensions.push(row);
+      }
+    })
+    return dimensions
+  }
 
+  /* Принято решение не менять структуру данных,
+  т.к. ее можно использовать как "координаты" ячеек, например:
+  {
+    genre: "action",
+    platform: "PS3",
+    count: 123
+  }
+  такая структура данных однозначно определяет положение конкретной ячейки данных,
+  т.к. определены измерения.
+  Далее, при итерации по всем измерениям (строк/столбцов),
+  можно доставать нужную ячейку по "координатам" ячейки
+  */
   return {
     width,
     height,
@@ -55,6 +90,9 @@ export default function transformProps(chartProps: ChartProps) {
     headerText,
     formData,
     filterState,
-    setDataMask
+    setDataMask,
+    groupbyColumns,
+    groupbyRows,
+    dimensions: collectDefaultDimensions(groupbyColumns, groupbyRows)
   };
 }
