@@ -21,19 +21,14 @@ import {
  */
 
 export default function buildQuery(formData: QueryFormData) {
-
-  // const { cols: groupby } = formData;
-  // const { colsPool: colsPool } = formData;
   const { groupbyColumns=[], groupbyRows=[], extra_form_data } = formData;
-  const time_grain_sqla =
-    extra_form_data?.time_grain_sqla || formData.time_grain_sqla;
-
+  
   return buildQueryContext(formData, (baseQueryObject: { ownState: any; }) => {
     console.log('formData in BQ:', formData)
     const { ownState } = baseQueryObject
 
-    // columns to be used in query aggregation, not in UI
-    // need to be sent as "columns" field, result will be processed further
+    // Columns для агрегации данных, не колонки таблицы
+    // В бекенд должно отправляться как атрибут "columns", результат обрабатывается в UI
     const columns = Array.from(
       new Set([
         ...ensureIsArray(groupbyColumns),
@@ -41,7 +36,6 @@ export default function buildQuery(formData: QueryFormData) {
       ]),
     ).map(col => {
       return {
-        timeGrain: time_grain_sqla,
         columnType: 'BASE_AXIS',
         sqlExpression: col,
         label: col,
@@ -49,13 +43,13 @@ export default function buildQuery(formData: QueryFormData) {
       } as AdhocColumn;
       return col
     })
-    console.log('magic columns in BQ:', columns)
+    // Агрегация происходит только в атрибуте "columns"
+    // Cols, rows, dimensions - нужны только в UI, 
+    // для агрегации данных нужен только columns
     return [
     {
       ...baseQueryObject,
       columns
-      // groupby,
-      // colsPool,
     },
   ]});
 }

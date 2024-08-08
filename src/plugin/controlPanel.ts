@@ -58,23 +58,20 @@ const config: ControlPanelConfig = {
       
     },
     {
-      label: 'Subtotal',
+      label: 'Filter',
       expanded: true,
       tabOverride: 'data',
       controlSetRows: [
         [
           {
-            name: 'aggregateFormula',
+            name: 'filter',
             config: {
-              type: 'TextControl',
-              label: 'Aggregation formula',
-              description: 'Aggregation formula to compute the subtotals',
-              renderTrigger: true
+              type: ''
             }
           }
         ]
       ]
-    },
+    }
     {
       label: t('Hello Controls!'),
       expanded: true,

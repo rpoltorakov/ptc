@@ -49,8 +49,6 @@ export default function transformProps(chartProps: ChartProps) {
     groupbyRows 
   } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
-
-  // console.log('formData via TransformProps.ts', formData);
   
   // Собрать измерения использованные как дефолтные в один массив с пулом
   const collectDefaultDimensions = (groupbyColumns: string[], groupbyRows: string[]) => {
@@ -69,14 +67,15 @@ export default function transformProps(chartProps: ChartProps) {
   }
 
   /* Принято решение не менять структуру данных,
-  т.к. ее можно использовать как "координаты" ячеек, например:
+  т.к. дефолтную можно использовать как есть, т.к. в ней уже просиходит итерация
+  по столбцам:
   {
-    genre: "action",
-    platform: "PS3",
+    genre: "action",    - сначала проход по жанрам
+    platform: "PS3",    - потом по платформам
     count: 123
   }
   такая структура данных однозначно определяет положение конкретной ячейки данных,
-  т.к. определены измерения.
+  т.к. одназначно определены измерения.
   Далее, при итерации по всем измерениям (строк/столбцов),
   можно доставать нужную ячейку по "координатам" ячейки
   */
@@ -84,7 +83,6 @@ export default function transformProps(chartProps: ChartProps) {
     width,
     height,
     data,
-    // and now your control data, manipulated as needed, and passed through as props!
     boldText,
     headerFontSize,
     headerText,
