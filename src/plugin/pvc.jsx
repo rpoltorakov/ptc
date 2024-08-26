@@ -63,7 +63,7 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
       let bufferArray = [];
       rowMatrix.forEach((e, i) => {
         e.forEach((j, g) => {
-          if(i % multiplicators[g] === 0){
+          if (i % multiplicators[g] === 0) {
             bufferArray.push(j)
           }
           else {
@@ -79,11 +79,6 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
     return buildNewArray(rowMatrix, multiplicators)
   }
 
-  // const findDataCell = (dataArr, dimsArr) => {
-  //   return dataArr.filter((el, i) => {
-  //     return dimsArr.every((dim) => Object.values(el).includes(dim))
-  //   })
-  // }
 
   const findDataCell = (dataArr, colDims, rowDims, isMetricsInCols, dims) => {
     const dimNames = [...dims[1], ...dims[2]]
@@ -91,7 +86,6 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
       const dims = [...colDims, ...rowDims]
       let target = {}
       dimNames.forEach((key, i) => target[key] = dims[i])
-      console.log("🚀 ~ result:", target)
       for (const key in target) {
         if (el[key] !== target[key]) {
           return false;
@@ -102,9 +96,7 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
   }
 
   const rowsMatrix = cartesianRows(...rowsArr)
-  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesianRows(...colsArr)
-  console.log("🚀 ~ colsMatrix:", colsMatrix)
 
   let result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr))
   return result.map((row, i) => {
@@ -133,10 +125,7 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
           // могу получить:
           // - где лежать метрики (строки/столбцы)
           //
-          // const value = findDataCell(data, [...col, ...rowsMatrix[i]])[0]
           const value = findDataCell(data, col, rowsMatrix[i], isMetricsInCols, dims)
-          console.log("🚀 ~ value:", value)
-
             return (
               <td
                 key={col.toString()+'cell'}

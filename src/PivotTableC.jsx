@@ -14,143 +14,8 @@ import {
   getMultiplicators,
   getUniqueValues
 } from './plugin/utils';
+import { Styles } from './plugin/Components/styles';
 
-const Styles = styled.div<PivotTableCStylesProps>`
-  .app-ptc {
-    padding: 4em;
-    text-align: center;
-    background-color: #282c34;
-    overflow: scroll;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    border-radius: ${({ theme }) => theme.gridUnit * 2}px;
-    height: ${({height}) => height}px;
-  }
-  .ptc-wrapper {
-  
-  }
-  
-  .table {
-    width: 100%;
-    border: 1px solid white;
-    border-collapse: collapse;
-  }
-
-  td {
-    border: 1px solid white;
-  }
-
-  .wrapper {
-    width: 90%;
-    padding: 0 1em;
-  }
-
-  .tableWrapper {
-    margin-top: 1em;
-    display: flex;
-    flex-direction: row;
-    gap: 2em;
-    position: relative;
-  }
-
-  .pools {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .dim-pool {
-    border: 2px solid gray;
-    min-height: 3em;
-    display: flex;
-    justify-content: center;
-  }
-
-  .dim-pool-col {
-    flex-direction: column;
-    width: 8em;
-  }
-  .dim-pool-row {
-    flex-direction: row;
-    width: 100%;
-  }
-
-  .dim-pool-metrics {
-    border-color: #107AB0;
-  }
-
-  .dim-pool-big {
-    margin-bottom: 1em;
-    width: 90%;
-  }
-
-  .dim-elem {
-    margin: 0.5em;
-    border: 1px solid gray;
-    border-radius: 2px;
-    padding:  0.5em 1.5em;
-    cursor: grab;
-    word-wrap: break-word;
-  }
-
-  .dim-metric {
-    border-color: #107AB0;
-  }
-
-  .colss {
-    display: flex;
-    flex-direction: row;
-    gap: 2em;
-  }
-
-  .metrics-button {
-    cursor: pointer;
-    border: 2px solid blue;
-    width: 8em;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .metrics {
-    border: 2px solid red;
-    width: 10em;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3em;
-    position: absolute;
-    top: 2em;
-    left: 2em;
-    min-height: 10em;
-    background-color: #3e4148;
-    z-index: 10;
-    transition: opacity .1s linear;
-    opacity: 0;
-  }
-
-  .metrics-opened {
-    opacity: 1;
-  }
-
-  .metrics-add-button {
-    cursor: pointer;
-    color: black;
-  }
-
-  .metric {
-    width: 8em !important;
-    border: 2px solid blue;
-  }
-  
-  .tdv {
-    color: white;
-  }
-`;
 
 export default function PivotTableC(props) {
   const { 
@@ -162,10 +27,44 @@ export default function PivotTableC(props) {
     dimensions
   } = props;
   console.log('props', props)
-  const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]])
+  const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
   const [metrics, setMetrics] = React.useState([...props.metrics])
   const [isMetricsOpened, setIsMetricsOpened] = React.useState(false);
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках)
+  const [data, setData] = React.useState(props.data)
+
+  const [colsAr, setColsAr] = React.useState(getUniqueValues(props.data, props.groupbyColumns, isMetricsInCols, props.metrics))
+  const [rowsAr, setRowsAr] = React.useState(getUniqueValues(props.data, props.groupbyRows, !isMetricsInCols, props.metrics))
+
+  
+  // на каждое изменение колонок/строк - запрос на апи с новыми данными и ререндер с полученными данными
+  useEffect(() => {
+    async function getNewData(props, dims)  {
+      console.log('trying to get new data with:', dims)
+      const newFormData = {
+        ...props.formData,
+        groupbyColumns: dims[1],
+        groupbyRows: dims[2],
+        groupby: [...dims[1], ...dims[2]],
+      }
+      delete newFormData.queries
+      console.log("🚀 ~ newFormData:", buildQuery(newFormData))
+
+      const newData = await ApiV1.getChartData(buildQuery(newFormData))
+      console.log("🚀 ~ newData:", newData.result[0])
+      setData(newData.result[0].data)
+    }
+    console.log('dims or metrics changed!', dims)
+    getNewData(props, dims)
+
+    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, props.metrics))
+    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, props.metrics))
+    console.log('new stuff:', dims, colsAr, rowsAr, data)
+  }, [dims, isMetricsInCols])
+  
+  useEffect(() => {
+
+  }, [])
 
   const handleMetricsOpen = () => {
     setIsMetricsOpened(!isMetricsOpened)
@@ -205,14 +104,7 @@ export default function PivotTableC(props) {
     })
     setMetric(sum)
   }
-
-  const colsAr = getUniqueValues(props.data, props.groupbyColumns, isMetricsInCols, props.metrics)
-  console.log("🚀 ~ colsAr:", colsAr)
-  const rowsAr = getUniqueValues(props.data, props.groupbyRows, !isMetricsInCols, props.metrics)
-  // const rowsAr = getUniqueValues(props.data, dims[2])
-  console.log("🚀 ~ rowsAr:", rowsAr)
-
-  const metric = 'count'
+  
   const handleDragEnd = (result) => {
     const reorder = (list, startIndex, endIndex) => {
       const result = Array.from(list);
@@ -247,15 +139,18 @@ export default function PivotTableC(props) {
       const items = reorder(dims[sInd], source.index, destination.index);
       const newState = [...dims];
       newState[sInd] = items;
+      console.log('Dims changed!', dims)
       setDims(newState);
     } else {
       const result = move(dims[sInd], dims[dInd], source, destination);
       const newState = [...dims];
       newState[sInd] = result[sInd];
       newState[dInd] = result[dInd];
+      console.log('Dims changed!', dims)
       setDims(newState);
     }
   }
+
   return (
     <Styles
       ref={rootElem}
@@ -307,13 +202,13 @@ export default function PivotTableC(props) {
                 metricsAr={metrics}
               />
 
-              <table id='t' className='table'>
+              <table id='t' className='table table-pvc'>
                 <thead>
                   {getColumnHeaders(colsAr, rowsAr)}
                 </thead>
                 <tbody>
 
-                  {getRows(rowsAr, colsAr, props.data, dims, isMetricsInCols)}
+                  {getRows(rowsAr, colsAr, data, dims, isMetricsInCols)}
                   
                 </tbody>
               </table>

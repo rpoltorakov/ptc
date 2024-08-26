@@ -23,7 +23,10 @@ import {
 export default function buildQuery(formData: QueryFormData) {
   const { groupbyColumns=[], groupbyRows=[], extra_form_data } = formData;
   
-  return buildQueryContext(formData, (baseQueryObject: { ownState: any; }) => {
+  
+  
+  // return buildQueryContext(formData, (baseQueryObject: { ownState: any; }) => {
+    return buildQueryContext(formData, baseQueryObject => {
     // console.log('formData in BQ:', formData)
     const { ownState } = baseQueryObject
 
@@ -46,10 +49,14 @@ export default function buildQuery(formData: QueryFormData) {
     // Агрегация происходит только в атрибуте "columns"
     // Cols, rows, dimensions - нужны только в UI, 
     // для агрегации данных нужен только columns
+    console.log(formData)
+    
     return [
     {
       ...baseQueryObject,
-      columns
+      // columns,
+      groupby: columns
+      // ownState
     },
   ]});
 }
