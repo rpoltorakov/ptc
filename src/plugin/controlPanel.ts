@@ -71,7 +71,7 @@ const config: ControlPanelConfig = {
           }
         ]
       ]
-    }
+    },
     {
       label: t('Hello Controls!'),
       expanded: true,

@@ -1,15 +1,32 @@
-export const getUniqueValues = (data, dims) => {
+/*
+  Получение уникальных значений измерений
+  из массива данных
+*/
+export const getUniqueValues = (data, dims, isMetricsInCols, metrics) => {
   let uniqueCols = []
-  dims.map((dim) => {
-    const unique = [...new Set(data.map((item) => item[dim]))]
-    if (unique.length === 1 && unique[0] === undefined) return
+  dims.forEach((dim) => {
+    const unique = [...new Set(data.map((item) => {
+      return item[dim]
+    }))]
+  
+    if (unique.length === 1 && unique[0] === undefined) return // не должны до сюда доходить
     if (unique.length === 1 && unique[0] !== undefined) {
-      uniqueCols.push([unique])
-      return
+      uniqueCols.push(unique ? [unique] : ['null']) // если столбец один - нужно положить его как unique=[[values]], иначе будет unique=[values]
+      return 
     }
-    uniqueCols.push(unique)
+    uniqueCols.push(unique ? unique : 'null')
   })
+
+  // Обработка выбора расположения метрик
+  // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
+  if (isMetricsInCols) {
+    uniqueCols.push(metrics)
+  }
   return uniqueCols
+}
+
+export const renderValue = (value) => {
+  return value ? value : '\u00A0'
 }
 
 export const getDimSpan = (arr, level) => {

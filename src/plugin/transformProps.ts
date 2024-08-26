@@ -48,6 +48,7 @@ export default function transformProps(chartProps: ChartProps) {
     groupbyColumns, 
     groupbyRows 
   } = formData;
+  // console.log('formData', formData)
   const data = queriesData[0].data as TimeseriesDataRecord[];
   
   // Собрать измерения использованные как дефолтные в один массив с пулом
@@ -66,19 +67,17 @@ export default function transformProps(chartProps: ChartProps) {
     return dimensions
   }
 
-  /* Принято решение не менять структуру данных,
-  т.к. дефолтную можно использовать как есть, т.к. в ней уже просиходит итерация
-  по столбцам:
-  {
-    genre: "action",    - сначала проход по жанрам
-    platform: "PS3",    - потом по платформам
-    count: 123
+  // Собрать метрики в массив
+  const collectMetrics = (formData:any) => {
+    return formData.metrics.map((metric:any) => {
+      if (typeof metric === 'string') {
+        return metric
+      } else {
+        return metric.label
+      }
+    });
   }
-  такая структура данных однозначно определяет положение конкретной ячейки данных,
-  т.к. одназначно определены измерения.
-  Далее, при итерации по всем измерениям (строк/столбцов),
-  можно доставать нужную ячейку по "координатам" ячейки
-  */
+  // console.log('dimensions', dimensions)
   return {
     width,
     height,
@@ -91,6 +90,8 @@ export default function transformProps(chartProps: ChartProps) {
     setDataMask,
     groupbyColumns,
     groupbyRows,
-    dimensions: collectDefaultDimensions(groupbyColumns, groupbyRows)
+    // dimensions: collectDefaultDimensions(groupbyColumns, groupbyRows),
+    dimensions,
+    metrics: collectMetrics(formData),
   };
 }

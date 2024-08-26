@@ -1,6 +1,7 @@
 import React from 'react'
-import { getDimSpan, getMultiplicators } from './utils'
+import { getDimSpan, getMultiplicators, renderValue } from './utils'
 
+// Получение заголовков в столбцах
 export const getColumnHeaders = (colsArr, rowsArr) => {
   const getDimsHier = (colsArr) => {
     let indicators = colsArr
@@ -39,17 +40,22 @@ export const getColumnHeaders = (colsArr, rowsArr) => {
             key={el+i} 
             className='td header'
             colSpan={span}
-          >{el.value}</td>
+          >{renderValue(el.value)}</td>
         })}
       </tr>
     )
   })
 }
 
-export const getRows = (rowsArr, colsArr, data) => {
+export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
   const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
-  const rowsMatrix = cartesian(...rowsArr)
-  const colsMatrix = cartesian(...colsArr)
+  const cartesianRows = (...a) => {
+    if (a.length === 1) {
+      return a[0].map(e => [e])
+    } else {
+      return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+    }
+  }
 
   const dedupMatrix = (rowMatrix, multiplicators) => {
     let result = []
@@ -61,7 +67,7 @@ export const getRows = (rowsArr, colsArr, data) => {
             bufferArray.push(j)
           }
           else {
-            bufferArray.push('')    
+            bufferArray.push('') // '' - метка что ячейки нужно объединить (span=0)
           }
         })
         result.push(bufferArray)
@@ -73,34 +79,67 @@ export const getRows = (rowsArr, colsArr, data) => {
     return buildNewArray(rowMatrix, multiplicators)
   }
 
+  // const findDataCell = (dataArr, dimsArr) => {
+  //   return dataArr.filter((el, i) => {
+  //     return dimsArr.every((dim) => Object.values(el).includes(dim))
+  //   })
+  // }
 
-
-  let result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr))
-  const findDataCell = (dataArr, dimsArr) => {
-    return dataArr.filter((el, i) => {
-      return dimsArr.every((dim) => Object.values(el).includes(dim))
+  const findDataCell = (dataArr, colDims, rowDims, isMetricsInCols, dims) => {
+    const dimNames = [...dims[1], ...dims[2]]
+    return data.find((el, i) => {
+      const dims = [...colDims, ...rowDims]
+      let target = {}
+      dimNames.forEach((key, i) => target[key] = dims[i])
+      console.log("🚀 ~ result:", target)
+      for (const key in target) {
+        if (el[key] !== target[key]) {
+          return false;
+        }
+      }
+      return true
     })
   }
 
+  const rowsMatrix = cartesianRows(...rowsArr)
+  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
+  const colsMatrix = cartesianRows(...colsArr)
+  console.log("🚀 ~ colsMatrix:", colsMatrix)
+
+  let result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr))
   return result.map((row, i) => {
     return (
       <tr key={row.toString()+i.toString()+'rowHeader'}>
 
+        {/* заголовки в строках */}
         {row.map((el, j) => (
-          el ? <td 
-            className='td header' 
-            key={el.toString()+j.toString()+'header'}
-            rowSpan={el ? getDimSpan(rowsArr, j) : 0}
-          >
-            {el}
-          </td> : null
+          // если елемент существует - возвращаем ячейку
+          el||el===null ? 
+            <td
+              className='td header' 
+              key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
+              rowSpan={el === '' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
+            > 
+              {renderValue(el)} 
+            </td> 
+            : // если нет: '' - для объединения ячеек --> null что бы объединить, '\u00A0' (nbsp) как значение измерения
+            (el === '') ? null : '\u00A0'
         ))}
 
-        {colsMatrix.map((el, k) => {
-          const value = findDataCell(data, [el, ...rowsMatrix[i]])[0]
+        {/* ячейки данных */}
+        {colsMatrix.map((col, k) => {
+          // col - массив значений измерений колонок
+          // rowsMatrix[i] - массив значений измерений строк
+          // могу получить:
+          // - где лежать метрики (строки/столбцы)
+          //
+          // const value = findDataCell(data, [...col, ...rowsMatrix[i]])[0]
+          const value = findDataCell(data, col, rowsMatrix[i], isMetricsInCols, dims)
+          console.log("🚀 ~ value:", value)
+
             return (
               <td
-                key={el.toString()+'cell'}
+                key={col.toString()+'cell'}
                 className='tdv'
               >
                 {value ? value.count : null}

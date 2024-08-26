@@ -24,7 +24,7 @@ export default function buildQuery(formData: QueryFormData) {
   const { groupbyColumns=[], groupbyRows=[], extra_form_data } = formData;
   
   return buildQueryContext(formData, (baseQueryObject: { ownState: any; }) => {
-    console.log('formData in BQ:', formData)
+    // console.log('formData in BQ:', formData)
     const { ownState } = baseQueryObject
 
     // Columns для агрегации данных, не колонки таблицы
