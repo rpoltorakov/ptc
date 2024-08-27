@@ -1,4 +1,5 @@
 import { styled } from '@superset-ui/core'
+import React from "react";
 
 export const Styles = styled.div<PivotTableCStylesProps>`
   .app-ptc {
@@ -104,7 +105,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
 
   .metrics {
     border: 2px solid red;
-    width: 10em;
+    
     display: flex;
     flex-direction: column;
     gap: 0.3em;
@@ -138,3 +139,11 @@ export const Styles = styled.div<PivotTableCStylesProps>`
     color: white;
   }
 `;
+
+
+export const uncheckedIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z"/></svg>
+)
+export const checkedIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368h-80Z"/></svg>
+)

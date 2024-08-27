@@ -28,7 +28,7 @@ export default function PivotTableC(props) {
   } = props;
   console.log('props', props)
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
-  const [metrics, setMetrics] = React.useState([...props.metrics])
+  const [metrics, setMetrics] = React.useState([...props.formData.metrics])
   const [isMetricsOpened, setIsMetricsOpened] = React.useState(false);
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках)
   const [data, setData] = React.useState(props.data)
@@ -40,7 +40,7 @@ export default function PivotTableC(props) {
   // на каждое изменение колонок/строк - запрос на апи с новыми данными и ререндер с полученными данными
   useEffect(() => {
     async function getNewData(props, dims)  {
-      console.log('trying to get new data with:', dims)
+      // console.log('trying to get new data with:', dims)
       const newFormData = {
         ...props.formData,
         groupbyColumns: dims[1],
@@ -48,18 +48,18 @@ export default function PivotTableC(props) {
         groupby: [...dims[1], ...dims[2]],
       }
       delete newFormData.queries
-      console.log("🚀 ~ newFormData:", buildQuery(newFormData))
+      // console.log("🚀 ~ newFormData:", buildQuery(newFormData))
 
       const newData = await ApiV1.getChartData(buildQuery(newFormData))
-      console.log("🚀 ~ newData:", newData.result[0])
+      // console.log("🚀 ~ newData:", newData.result[0])
       setData(newData.result[0].data)
     }
-    console.log('dims or metrics changed!', dims)
+    // console.log('dims or metrics changed!', dims)
     getNewData(props, dims)
 
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, props.metrics))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, props.metrics))
-    console.log('new stuff:', dims, colsAr, rowsAr, data)
+    // console.log('new stuff:', dims, colsAr, rowsAr, data)
   }, [dims, isMetricsInCols])
   
   useEffect(() => {
@@ -139,14 +139,14 @@ export default function PivotTableC(props) {
       const items = reorder(dims[sInd], source.index, destination.index);
       const newState = [...dims];
       newState[sInd] = items;
-      console.log('Dims changed!', dims)
+      // console.log('Dims changed!', dims)
       setDims(newState);
     } else {
       const result = move(dims[sInd], dims[dInd], source, destination);
       const newState = [...dims];
       newState[sInd] = result[sInd];
       newState[dInd] = result[dInd];
-      console.log('Dims changed!', dims)
+      // console.log('Dims changed!', dims)
       setDims(newState);
     }
   }
@@ -177,12 +177,14 @@ export default function PivotTableC(props) {
                 <div className='metrics-button' onClick={handleMetricsOpen}>
                   Metrics
                 </div>
+
                 {<Metrics 
                   isOpened={isMetricsOpened}
                   metrics={metrics} 
                   checked={isMetricsInCols}
                   handleChange={handleMetricsSwitch}
                 />}
+
               </div>
 
             <DimPool

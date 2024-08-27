@@ -49,7 +49,7 @@ export default function buildQuery(formData: QueryFormData) {
     // Агрегация происходит только в атрибуте "columns"
     // Cols, rows, dimensions - нужны только в UI, 
     // для агрегации данных нужен только columns
-    console.log(formData)
+    // console.log(formData)
     
     return [
     {
