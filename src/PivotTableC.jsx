@@ -8,13 +8,13 @@ import { Metrics } from './plugin/Components/Metrics';
 import { Rows } from './plugin/Components/Rows';
 import { Styles } from './plugin/Components/styles';
 import { getUniqueValues } from './plugin/utils';
+import { Button, Popover } from 'antd';
+import { DownOutlined } from '@ant-design/icons'
 
 
 export default function PivotTableC(props) {
   const { 
-    height, 
-    width, 
-    setDataMask,
+    height,
     groupbyColumns,
     groupbyRows,
     dimensions
@@ -29,6 +29,7 @@ export default function PivotTableC(props) {
   const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
   const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics))
 
+  // Функция получения данных
   async function getNewData(props, dims)  {
     const newFormData = {
       ...props.formData,
@@ -39,33 +40,25 @@ export default function PivotTableC(props) {
     delete newFormData.queries
 
     const newData = await ApiV1.getChartData(buildQuery(newFormData))
-    // console.log("🚀 ~ newData:", newData)
     setData([...newData.result[0].data])
-    // console.log('new data length:', data.length)
   }
-  // на каждое изменение колонок/строк - запрос на апи с новыми данными и ререндер с полученными данными
+  // на изменение колонок/строк - запрос на апи
   useEffect(() => {
-    // console.log('old data', data)
-    
     getNewData(props, dims)
-
-    
   }, [dims, isMetricsInCols])
-  
   useEffect(() => {
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, props.metrics))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, props.metrics))
   }, [dims, data])
 
-  const handleMetricsOpen = () => {
-    setIsMetricsOpened(!isMetricsOpened)
-  }
+
   const handleMetricsSwitch = () => {
     setIsMetricsInCols(!isMetricsInCols)
   }
 
   const rootElem = createRef();
 
+  // колбэк для драг'н'дропа
   const handleDragEnd = (result) => {
     const reorder = (list, startIndex, endIndex) => {
       const result = Array.from(list);
@@ -132,17 +125,21 @@ export default function PivotTableC(props) {
           />
           <div className='wrapper'>
             <div className='colss'>
-              <div style={{ display: 'flex', position: 'relative' }}>
-                <div className='metrics-button' onClick={handleMetricsOpen}>
-                  Metrics
-                </div>
+              <div style={{ display: 'flex', position: 'relative', width: '9em' }}>
+                <Popover
+                  content={<Metrics 
+                    isOpened={isMetricsOpened}
+                    metrics={metrics} 
+                    checked={isMetricsInCols}
+                    handleChange={handleMetricsSwitch}
+                  />}
+                  trigger='click'
+                  placement="bottomLeft"
+                >
+                  <Button block>Metrics</Button>
+                  
 
-                {<Metrics 
-                  isOpened={isMetricsOpened}
-                  metrics={metrics} 
-                  checked={isMetricsInCols}
-                  handleChange={handleMetricsSwitch}
-                />}
+                </Popover>
 
               </div>
 
@@ -178,7 +175,6 @@ export default function PivotTableC(props) {
                 </tbody>
               </table>
             </div>
-
           </div>
       </div>
       </DragDropContext>

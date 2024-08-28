@@ -106,21 +106,23 @@ export const Styles = styled.div<PivotTableCStylesProps>`
     display: flex;
     flex-direction: column;
     gap: 0.3em;
-    position: absolute;
-    top: 2em;
-    left: 2em;
+    padding: 1em;
     min-height: 10em;
     background-color: #3e4148;
     z-index: 10;
     transition: opacity .1s linear;
-    opacity: 0;
-    visibility: hidden;
-    padding: 1em;
+    
   }
 
   .metrics-opened {
     opacity: 1;
     visibility: visible;
+
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 4em;
+    left: 4em;
   }
 
   .metrics-add-button {
