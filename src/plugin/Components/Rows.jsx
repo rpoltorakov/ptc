@@ -1,53 +1,8 @@
 import React from 'react'
-import { getDimSpan, getMultiplicators, renderValue } from './utils'
+import { getDimSpan, getMultiplicators, renderValue } from '../utils'
 
-// Получение заголовков в столбцах
-export const getColumnHeaders = (colsArr, rowsArr) => {
-  const getDimsHier = (colsArr) => {
-    let indicators = colsArr
-    let result = []
-    let results = []
-    function recur(level) {
-      if (level === indicators.length) {
-        return;
-      }
-
-      let length = indicators[level].length;
-      for (let i = 0; i < length; i++) {
-          result.push(indicators[level][i]);
-          results.push({level: level, value: indicators[level][i]})
-          recur(level + 1);
-      }
-    }
-    recur(0)
-    return results
-  }
-  const colsHier = getDimsHier(colsArr)
-
-  return colsArr.map((el, i) => {
-    return (
-      <tr key={el.toString()+i}>
-        {rowsArr.map((el, i) => (
-          <th 
-            className='td' 
-            key={el.toString()+i.toString()+'nullCross'}
-          />
-        ))}
-
-        {colsHier.filter(el => el.level === i).map((el, i) => {
-          const span = getDimSpan(colsArr, el.level)
-          return <td 
-            key={el+i} 
-            className='td header'
-            colSpan={span}
-          >{renderValue(el.value)}</td>
-        })}
-      </tr>
-    )
-  })
-}
-
-export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
+export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
+  // console.log('data length:', data.length)
   const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
   const cartesianRows = (...a) => {
     if (a.length === 1) {
@@ -80,12 +35,14 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
   }
 
 
-  const findDataCell = (dataArr, colDims, rowDims, isMetricsInCols, dims) => {
+  const findDataCell = (data, colDims, rowDims, isMetricsInCols, dims) => {
     const dimNames = [...dims[1], ...dims[2]]
-    return data.find((el, i) => {
+    const value = data.find((el, i) => {
       const dims = [...colDims, ...rowDims]
+      // console.log("🚀 ~ dims:", dims)
       let target = {}
       dimNames.forEach((key, i) => target[key] = dims[i])
+      // console.log("🚀 ~ target:", target)
       for (const key in target) {
         if (el[key] !== target[key]) {
           return false;
@@ -93,6 +50,15 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
       }
       return true
     })
+
+    let metric = ''
+    if (isMetricsInCols) {
+      metric = colDims[colDims.length-1]
+    } else {
+      metric = rowDims[rowDims.length-1]
+    }
+
+    return value ? value[metric] : null
   }
 
   const rowsMatrix = cartesianRows(...rowsArr)
@@ -120,6 +86,8 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
 
         {/* ячейки данных */}
         {colsMatrix.map((col, k) => {
+          console.log("🚀 ~ col:", col)
+          console.log("🚀 ~ row:", rowsMatrix[i])
           // col - массив значений измерений колонок
           // rowsMatrix[i] - массив значений измерений строк
           // могу получить:
@@ -131,7 +99,7 @@ export const getRows = (rowsArr, colsArr, data, dims, isMetricsInCols) => {
                 key={col.toString()+'cell'}
                 className='tdv'
               >
-                {value ? value.count : null}
+                {value}
               </td>
             )
         })}

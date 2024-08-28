@@ -1,42 +1,36 @@
 import React from "react";
 import { DownOutlined, SmileOutlined  } from '@ant-design/icons';
-import { Select, Space } from 'antd';
+import { Select, Space, Button } from 'antd';
 
-export const MetricSelect = ({ metrics }) => {
-  console.log('metric:', metric)
-  const parseMetrics = (m) => {
-    const valueMatched = m.match(/.*\(/gi)
-    const value = valueMatched ? valueMatched[0].slice(0, -1) : 'null'
-    return { value: value, label: value }
+export const MetricSelect = ({ metrics, i }) => {
+  const parseMetrics = (metrics) => {
+    return metrics.map((m) => {
+      const valueMatched = m.match(/.*(?=\()/gi)
+      const value = valueMatched ? valueMatched[0] : 'null' // .slice(0, -1)
+      return { value: value, label: value }
+    })
   }
 
-  const parseMetricsValues = (m) => {
-    const valueMatched = m.match(/\(.*\)/gi)
-    const value = valueMatched ? valueMatched[0].slice(1, -1) : 'null'
-    return { value: value, label: value }
+  const parseMetricsValues = (metrics) => {
+    return metrics.map((m) => {
+      const valueMatched = m.match(/\(.*\)/gi)
+      const value = valueMatched ? valueMatched[0].slice(1, -1) : 'null'
+      return { value: value, label: value }
+    })
   }  
 
-  const getDefaultSelect = (m) => {
-    const aggMatched = m.match(/.*\(/gi)
-    const agg = aggMatched ? aggMatched[0].slice(0, -1) : ''
-
-    const metricMatched = m.match(/\(.*\)/gi)
-    const metric = metricMatched ? metricMatched[0].slice(1, -1) : ''
-    return { agg, metric: m }
-  }
-
-  const aggregationsArr = parseMetrics(metric)
-  const metricsArr = parseMetricsValues(metric)
+  const aggregationsArr = parseMetrics(metrics)
+  const metricsArr = parseMetricsValues(metrics)
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
 
   return (
-    <div style={{display: 'flex', flexDirection: 'row'}}>
-      <div style={{ width: '15em'}}>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '1em' }}>
+      <div>
         <Select
-          defaultValue={getDefaultSelect(metric).agg}
+          defaultValue={aggregationsArr[i].label}
           style={{
             width: 120,
           }}
@@ -46,9 +40,9 @@ export const MetricSelect = ({ metrics }) => {
 
       </div>
 
-      <div style={{ width: '15em'}}>
+      <div>
         <Select
-          defaultValue={getDefaultSelect(metric).metric}
+          defaultValue={metricsArr[i].label}
           style={{
             width: 120,
           }}
@@ -58,7 +52,7 @@ export const MetricSelect = ({ metrics }) => {
       </div>
 
       <div>
-        DELETE
+        <Button type="primary" danger> Delete </Button>
       </div>
     </div>
   )

@@ -30,9 +30,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
     border: 1px solid white;
   }
 
-  .wrapper {
-    width: 90%;
-    padding: 0 1em;
+  .wrapper 
   }
 
   .tableWrapper {
@@ -71,7 +69,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
 
   .dim-pool-big {
     margin-bottom: 1em;
-    width: 90%;
+
   }
 
   .dim-elem {
@@ -104,8 +102,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   }
 
   .metrics {
-    border: 2px solid red;
-    
+    border: 2px solid #cecece;
     display: flex;
     flex-direction: column;
     gap: 0.3em;
@@ -118,6 +115,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
     transition: opacity .1s linear;
     opacity: 0;
     visibility: hidden;
+    padding: 1em;
   }
 
   .metrics-opened {

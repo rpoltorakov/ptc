@@ -57,3 +57,33 @@ export const getMultiplicators = (ar) => {
   return result
 }
 
+
+async function clickHandler() {
+  const newFormData = {
+    ...props.formData,
+    cols: ['genre']
+  }
+  const dataa = await ApiV1.getChartData(buildQuery(newFormData))
+
+  setData(dataa.result[0].data)
+  let sum = 0
+  dataa.result[0].data.forEach((o) => {
+    sum += o["SUM(global_sales)"]
+  })
+  setMetric(sum)
+}
+async function clickHandler1() {
+
+  const newFormData = {
+    ...props.formData,
+    cols: ['platform']
+  }
+  const dataa = await ApiV1.getChartData(buildQuery(newFormData))
+
+  setData(dataa.result[0].data)
+  let sum = 0
+  dataa.result[0].data.forEach((o) => {
+    sum += o["SUM(global_sales)"]
+  })
+  setMetric(sum)
+}

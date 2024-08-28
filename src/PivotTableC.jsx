@@ -2,19 +2,12 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { ApiV1, styled } from '@superset-ui/core';
 import React, { createRef, useEffect } from 'react';
 import buildQuery from './plugin/buildQuery';
-import { Dim } from './plugin/Components/Dim';
+import { ColumnHeaders } from './plugin/Components/ColumnHeaders';
 import { DimPool } from './plugin/Components/DimPool';
 import { Metrics } from './plugin/Components/Metrics';
-import {
-  getColumnHeaders,
-  getRows
-} from './plugin/pvc';
-import {
-  getDimSpan,
-  getMultiplicators,
-  getUniqueValues
-} from './plugin/utils';
+import { Rows } from './plugin/Components/Rows';
 import { Styles } from './plugin/Components/styles';
+import { getUniqueValues } from './plugin/utils';
 
 
 export default function PivotTableC(props) {
@@ -28,43 +21,41 @@ export default function PivotTableC(props) {
   } = props;
   console.log('props', props)
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
-  const [metrics, setMetrics] = React.useState([...props.formData.metrics])
+  const [metrics, setMetrics] = React.useState([...props.metrics])
   const [isMetricsOpened, setIsMetricsOpened] = React.useState(false);
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках)
-  const [data, setData] = React.useState(props.data)
+  const [data, setData] = React.useState([...props.data])
 
-  const [colsAr, setColsAr] = React.useState(getUniqueValues(props.data, props.groupbyColumns, isMetricsInCols, props.metrics))
-  const [rowsAr, setRowsAr] = React.useState(getUniqueValues(props.data, props.groupbyRows, !isMetricsInCols, props.metrics))
+  const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
+  const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics))
 
-  
+  async function getNewData(props, dims)  {
+    const newFormData = {
+      ...props.formData,
+      groupbyColumns: dims[1],
+      groupbyRows: dims[2],
+      groupby: [...dims[1], ...dims[2]],
+    }
+    delete newFormData.queries
+
+    const newData = await ApiV1.getChartData(buildQuery(newFormData))
+    // console.log("🚀 ~ newData:", newData)
+    setData([...newData.result[0].data])
+    // console.log('new data length:', data.length)
+  }
   // на каждое изменение колонок/строк - запрос на апи с новыми данными и ререндер с полученными данными
   useEffect(() => {
-    async function getNewData(props, dims)  {
-      // console.log('trying to get new data with:', dims)
-      const newFormData = {
-        ...props.formData,
-        groupbyColumns: dims[1],
-        groupbyRows: dims[2],
-        groupby: [...dims[1], ...dims[2]],
-      }
-      delete newFormData.queries
-      // console.log("🚀 ~ newFormData:", buildQuery(newFormData))
-
-      const newData = await ApiV1.getChartData(buildQuery(newFormData))
-      // console.log("🚀 ~ newData:", newData.result[0])
-      setData(newData.result[0].data)
-    }
-    // console.log('dims or metrics changed!', dims)
+    // console.log('old data', data)
+    
     getNewData(props, dims)
 
-    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, props.metrics))
-    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, props.metrics))
-    // console.log('new stuff:', dims, colsAr, rowsAr, data)
+    
   }, [dims, isMetricsInCols])
   
   useEffect(() => {
-
-  }, [])
+    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, props.metrics))
+    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, props.metrics))
+  }, [dims, data])
 
   const handleMetricsOpen = () => {
     setIsMetricsOpened(!isMetricsOpened)
@@ -75,36 +66,6 @@ export default function PivotTableC(props) {
 
   const rootElem = createRef();
 
-  async function clickHandler() {
-    const newFormData = {
-      ...props.formData,
-      cols: ['genre']
-    }
-    const dataa = await ApiV1.getChartData(buildQuery(newFormData))
-
-    setData(dataa.result[0].data)
-    let sum = 0
-    dataa.result[0].data.forEach((o) => {
-      sum += o["SUM(global_sales)"]
-    })
-    setMetric(sum)
-  }
-  async function clickHandler1() {
-
-    const newFormData = {
-      ...props.formData,
-      cols: ['platform']
-    }
-    const dataa = await ApiV1.getChartData(buildQuery(newFormData))
-
-    setData(dataa.result[0].data)
-    let sum = 0
-    dataa.result[0].data.forEach((o) => {
-      sum += o["SUM(global_sales)"]
-    })
-    setMetric(sum)
-  }
-  
   const handleDragEnd = (result) => {
     const reorder = (list, startIndex, endIndex) => {
       const result = Array.from(list);
@@ -157,8 +118,6 @@ export default function PivotTableC(props) {
       boldText={props.boldText}
       headerFontSize={props.headerFontSize}
       height={height}
-      
-      // width={width}
     >
       <div className='ptc-wrapper'>
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -173,7 +132,7 @@ export default function PivotTableC(props) {
           />
           <div className='wrapper'>
             <div className='colss'>
-              <div style={{position: 'relative'}}>
+              <div style={{ display: 'flex', position: 'relative' }}>
                 <div className='metrics-button' onClick={handleMetricsOpen}>
                   Metrics
                 </div>
@@ -206,12 +165,16 @@ export default function PivotTableC(props) {
 
               <table id='t' className='table table-pvc'>
                 <thead>
-                  {getColumnHeaders(colsAr, rowsAr)}
+                  <ColumnHeaders colsArr={colsAr} rowsArr={rowsAr} />
                 </thead>
                 <tbody>
-
-                  {getRows(rowsAr, colsAr, data, dims, isMetricsInCols)}
-                  
+                  <Rows 
+                    rowsArr={rowsAr} 
+                    colsArr={colsAr} 
+                    data={data} 
+                    dims={dims} 
+                    isMetricsInCols={isMetricsInCols}
+                  />
                 </tbody>
               </table>
             </div>
