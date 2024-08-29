@@ -4,7 +4,7 @@ import {
   renderValue
 } from '../utils'
 
-export const ColumnHeaders = ({colsArr, rowsArr, isMetricsInCols}) => {
+export const ColumnHeaders = ({ colsArr, rowsArr, isMetricsInCols, showTotal }) => {
   const getDimsHier = (colsArr) => {
     let indicators = colsArr
     let result = []
@@ -46,7 +46,7 @@ export const ColumnHeaders = ({colsArr, rowsArr, isMetricsInCols}) => {
         })}
 
         {
-          !isMetricsInCols &&
+          !isMetricsInCols && showTotal &&
           <td
             className='tdv tdv-total'
           >

@@ -64,11 +64,26 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'filter',
+            name: 'subtotalsOn',
             config: {
-              type: ''
-            }
+              type: 'CheckboxControl',
+              label: 'Enable subtotals',
+              default: false,
+              renderTrigger: true,
+              description: 'Enable subtotals',
+            },
           }
+        ], [
+          {
+            name: 'grandTotalsOn',
+            config: {
+              type: 'CheckboxControl',
+              label: 'Enable grand totals',
+              default: false,
+              renderTrigger: true,
+              description: 'Enable grand totals',
+            },
+          },
         ]
       ]
     },

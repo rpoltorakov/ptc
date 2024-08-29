@@ -1,7 +1,7 @@
 import React from 'react'
 import { getDimSpan, getMultiplicators, renderValue } from '../utils'
 
-export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
+export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal }) => {
   // декартово произведение массивов
   const cartesian = (...a) => {
     if (a.length === 1) {
@@ -80,26 +80,15 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
   }
 
   const rowsMatrix = cartesian(...rowsArr)
-  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
-  console.log("🚀 ~ colsMatrix:", colsMatrix)
   // let subtotal = 0
   const result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
   const dataRow = result.map((row, i) => {
     return colsMatrix.map((col, k) => {
       const value = findDataCell(data, col, rowsMatrix[i], isMetricsInCols, dims)
       return value
-        // return (
-        //   <td
-        //     key={col.toString()+'cell'}
-        //     className='tdv'
-        //   >
-        //     {value}
-        //   </td>
-        // )
     })
   })
-  console.log("🚀 ~ dataRow:", dataRow)
   
   
   return (
@@ -133,7 +122,7 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
           
 
           { // подитоги в строках
-            !isMetricsInCols &&
+            !isMetricsInCols && showTotal &&
             <td
               className=' tdv tdv-total'
             >{getRowSubtotal(dataRow[i], 'SUM')}</td>
@@ -144,7 +133,7 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
       ))}
       
       { // подитоги в колонках
-        isMetricsInCols &&
+        isMetricsInCols && showTotal &&
         <tr>
           <td 
             className='tdv tdv-total'

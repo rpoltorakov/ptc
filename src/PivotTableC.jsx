@@ -10,6 +10,7 @@ import { Styles } from './plugin/Components/styles';
 import { getUniqueValues } from './plugin/utils';
 import { Button, Popover } from 'antd';
 import { DownOutlined } from '@ant-design/icons'
+import { SubtotalsMenu } from './plugin/Components/SubtotalsMenu';
 
 
 export default function PivotTableC(props) {
@@ -19,6 +20,10 @@ export default function PivotTableC(props) {
     groupbyRows,
     dimensions
   } = props;
+  const {
+    grandTotalsOn,
+    subtotalsOn
+  } = props.formData
   console.log('props', props)
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
   const [metrics, setMetrics] = React.useState([...props.metrics])
@@ -26,6 +31,7 @@ export default function PivotTableC(props) {
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках)
   const [data, setData] = React.useState([...props.data])
   const [subtotal, setSubtotal] = React.useState(false)
+  // const [showSubtotal, setShowSubtotal] = React.useState(false)
   // const [subtotalInCols, setSubtotalInCols] = React.useState(true)
 
   const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
@@ -57,6 +63,9 @@ export default function PivotTableC(props) {
   const handleMetricsSwitch = () => {
     setIsMetricsInCols(!isMetricsInCols)
   }
+  // const handleSubtotalsSwitch = () => {
+  //   setShowSubtotal(!showSubtotal)
+  // }
 
   const rootElem = createRef();
 
@@ -127,7 +136,8 @@ export default function PivotTableC(props) {
           />
           <div className='wrapper'>
             <div className='colss'>
-              <div style={{ display: 'flex', position: 'relative', width: '9em' }}>
+              <div style={{ display: 'flex', position: 'relative', width: '9em',flexDirection:'column' }}>
+                
                 <Popover
                   content={<Metrics 
                     isOpened={isMetricsOpened}
@@ -139,8 +149,17 @@ export default function PivotTableC(props) {
                   placement="bottomLeft"
                 >
                   <Button block>Metrics</Button>
-                  
+                </Popover>
 
+                <Popover
+                  content={
+                    <SubtotalsMenu 
+                    />
+                  }
+                  trigger='click'
+                  placement="bottomLeft"
+                >
+                  <Button block>Subtotals</Button>
                 </Popover>
 
               </div>
@@ -164,7 +183,13 @@ export default function PivotTableC(props) {
 
               <table id='t' className='table table-pvc'>
                 <thead>
-                  <ColumnHeaders colsArr={colsAr} rowsArr={rowsAr} isMetricsInCols={isMetricsInCols}/>
+                  <ColumnHeaders 
+                    colsArr={colsAr} 
+                    rowsArr={rowsAr} 
+                    isMetricsInCols={isMetricsInCols}
+                    // showSubtotal={showSubtotal}\
+                    showTotal={grandTotalsOn}
+                  />
                 </thead>
                 <tbody>
                   <Rows 
@@ -173,6 +198,8 @@ export default function PivotTableC(props) {
                     data={data} 
                     dims={dims} 
                     isMetricsInCols={isMetricsInCols}
+                    // showSubtotal={showSubtotal}
+                    showTotal={grandTotalsOn}
                   />
                 </tbody>
               </table>

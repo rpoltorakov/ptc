@@ -142,6 +142,17 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   .tdv-total {
     font-weight: bold;
   }
+  
+  .subtotals-menu {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .subtotals-menu-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+  }
 `;
 
 
