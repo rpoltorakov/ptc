@@ -25,6 +25,8 @@ export default function PivotTableC(props) {
   const [isMetricsOpened, setIsMetricsOpened] = React.useState(false);
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках)
   const [data, setData] = React.useState([...props.data])
+  const [subtotal, setSubtotal] = React.useState(false)
+  // const [subtotalInCols, setSubtotalInCols] = React.useState(true)
 
   const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
   const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics))
@@ -162,7 +164,7 @@ export default function PivotTableC(props) {
 
               <table id='t' className='table table-pvc'>
                 <thead>
-                  <ColumnHeaders colsArr={colsAr} rowsArr={rowsAr} />
+                  <ColumnHeaders colsArr={colsAr} rowsArr={rowsAr} isMetricsInCols={isMetricsInCols}/>
                 </thead>
                 <tbody>
                   <Rows 

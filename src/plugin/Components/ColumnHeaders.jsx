@@ -4,7 +4,7 @@ import {
   renderValue
 } from '../utils'
 
-export const ColumnHeaders = ({colsArr, rowsArr}) => {
+export const ColumnHeaders = ({colsArr, rowsArr, isMetricsInCols}) => {
   const getDimsHier = (colsArr) => {
     let indicators = colsArr
     let result = []
@@ -44,6 +44,15 @@ export const ColumnHeaders = ({colsArr, rowsArr}) => {
             colSpan={span}
           >{renderValue(el.value)}</td>
         })}
+
+        {
+          !isMetricsInCols &&
+          <td
+            className='tdv tdv-total'
+          >
+            Total
+          </td>
+        }
       </tr>
     )
   })

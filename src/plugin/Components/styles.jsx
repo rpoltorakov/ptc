@@ -131,12 +131,16 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   }
 
   .metric {
-    width: 8em !important;
+    width: 8em;
     border: 2px solid blue;
   }
   
   .tdv {
     color: white;
+  }
+
+  .tdv-total {
+    font-weight: bold;
   }
 `;
 

@@ -37,7 +37,9 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
   // поиск метрик
   const findDataCell = (data, colDims, rowDims, isMetricsInCols, dims) => {
     const colsParsed = isMetricsInCols ? colDims.slice(0, -1) : colDims
+    // console.log("🚀 ~ colsParsed:", colsParsed)
     const dimNames = [...dims[1], ...dims[2]]
+    // console.log("🚀 ~ dimNames:", dimNames)
     const value = data.find((el, i) => {
       const dims = [...colsParsed, ...rowDims]
       let target = {}
@@ -50,7 +52,7 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
       return true
     })
 
-    // поиску нужной метрики
+    // поиск нужной метрики
     let metric = ''
     if (isMetricsInCols) {
       metric = colDims[colDims.length-1]
@@ -61,41 +63,101 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols }) => {
     return value ? value[metric] : null
   }
 
+  const getRowSubtotal = (dataRow, agg) => {
+    if (agg = 'SUM') {
+      return dataRow.reduce((acc, cur) => acc + cur, 0)
+    }
+  }
+
+  const getColumnSubtotal = (colsMatrix, dataRow, agg) => {
+    return colsMatrix.map((col, i) => {
+      let result = 0
+      dataRow.forEach((row, j) => {
+        result += row[i]
+      })
+      return result
+    })
+  }
+
   const rowsMatrix = cartesian(...rowsArr)
+  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
-
-  let result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr))
-  return result.map((row, i) => (
-    <tr key={row.toString()+i.toString()+'rowHeader'}>
-      { // заголовки в строках
-        row.map((el, j) => (
-          // если елемент существует - возвращаем ячейку
-          el || el === null ? 
-            <td
-              className='td header' 
-              key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
-              rowSpan={el === '' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
-            > 
-              {renderValue(el)} 
-            </td> 
-            : // если нет: '' - для объединения ячеек --> null что бы объединить, '\u00A0' (nbsp) как значение измерения
-            (el === '') ? null : '\u00A0'
-        ))
-      }
-
-      { // ячейки данных
-        colsMatrix.map((col, k) => {
-          const value = findDataCell(data, col, rowsMatrix[i], isMetricsInCols, dims)
-            return (
+  console.log("🚀 ~ colsMatrix:", colsMatrix)
+  // let subtotal = 0
+  const result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
+  const dataRow = result.map((row, i) => {
+    return colsMatrix.map((col, k) => {
+      const value = findDataCell(data, col, rowsMatrix[i], isMetricsInCols, dims)
+      return value
+        // return (
+        //   <td
+        //     key={col.toString()+'cell'}
+        //     className='tdv'
+        //   >
+        //     {value}
+        //   </td>
+        // )
+    })
+  })
+  console.log("🚀 ~ dataRow:", dataRow)
+  
+  
+  return (
+    <>
+      {result.map((row, i) => (
+        <tr key={row.toString()+i.toString()+'rowHeader'}>
+          { // заголовки в строках
+            row.map((el, j) => (
+              // если елемент существует - возвращаем ячейку
+              el || el === null ? 
+                <td
+                  className='td header' 
+                  key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
+                  rowSpan={el === '' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
+                > 
+                  {renderValue(el)} 
+                </td> 
+                : // если нет: '' - для объединения ячеек --> null что бы объединить, '\u00A0' (nbsp) как значение измерения
+                (el === '') ? null : '\u00A0'
+            ))
+          }
+          
+          { // ячейки данных
+            dataRow[i].map((el, k) => (
               <td
-                key={col.toString()+'cell'}
+                key={'dataCell' + k.toString() + 'row' + i.toString()}
                 className='tdv'
-              >
-                {value}
-              </td>
-            )
-        })
+              >{el}</td>
+            ))
+          }
+          
+
+          { // подитоги в строках
+            !isMetricsInCols &&
+            <td
+              className=' tdv tdv-total'
+            >{getRowSubtotal(dataRow[i], 'SUM')}</td>
+          }
+
+          
+        </tr>
+      ))}
+      
+      { // подитоги в колонках
+        isMetricsInCols &&
+        <tr>
+          <td 
+            className='tdv tdv-total'
+            colSpan={rowsMatrix[rowsMatrix.length-1].length}
+          >Total</td>
+          {getColumnSubtotal(colsMatrix, dataRow, 'SUM').map(el => (
+            <td
+              className='tdv tdv-total'
+              // key={'totalCol' + i.toString()}
+            >{el}</td>
+          ))}
+        </tr>
       }
-    </tr>
-  ))
+    </>
+  )
 }
