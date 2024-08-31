@@ -5,15 +5,19 @@ import { checkedIcon, uncheckedIcon } from "./styles";
 import { MetricSelect } from "./MetricSelect";
 import { Button, Space } from "antd";
 
-export const Metrics = ({ isOpened, handleChange, checked, metrics }) => {
+export const Metrics = ({
+  isOpened, 
+  handleChange, 
+  checked, 
+  metrics, 
+  metricsAggs, 
+  metricsFields, 
+  metricsFormData,
+  handleMetricsChange
+}) => {
   const handleClick = () => {
-    console.log('clicked')
+    handleChange()
   }
-  const options = [
-    { value: 'count', label: 'count' },
-    { value: 'SUM(job)', label: 'SUM(job)' }
-  ]
-  
   return (
   <>
     <div
@@ -31,10 +35,19 @@ export const Metrics = ({ isOpened, handleChange, checked, metrics }) => {
       </label>
       </div>
 
-      {metrics.map((metric, i) => <MetricSelect metrics={metrics} i={i} key={i+'metrics'}/>)}
+      {metrics.map((metric, i) => (
+        <MetricSelect 
+          metricsFields={metricsFields}
+          metricsAggs={metricsAggs} 
+          metrics={metrics} 
+          i={i} 
+          key={i+'metrics'}
+          metricsFormData={metricsFormData}
+          handleMetricsChange={handleMetricsChange}
+        />
+      ))}
 
       <Button> + </Button>
-      {/* {props.metrics.map((el, i) => <div key={'metrics'+i}>{el}</div>)} */}
     </div>
   </>)
 }

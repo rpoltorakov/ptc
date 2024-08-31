@@ -1,0 +1,127 @@
+
+> pivot-table-c@0.1.0 dev
+> BABEL_OUTPUT=esm babel src --extensions ".ts,.tsx,.js,.jsx" --watch --copy-files --out-dir esm
+
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+SyntaxError: /opt/superset_roma/ptc/src/plugin/pivotTable.ts: Unexpected token, expected "," (17:9)
+
+  15 |   )
+  16 |   return (
+> 17 |     <div ref={dragRef} style={{ opacity }}>
+     |          ^
+  18 |       {text}
+  19 |     </div>
+  20 |   )
+    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
+    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
+    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
+    at Parser.unexpected (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3601:16)
+    at Parser.expect (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3575:28)
+    at Parser.tsParseDelimitedListWorker (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7929:14)
+    at Parser.tsParseDelimitedList (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7898:25)
+    at Parser.tsParseBracketedList (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7951:25)
+    at Parser.tsParseTypeParameters (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:8063:24)
+    at /opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9913:29 {
+  loc: Position { line: 17, column: 9 },
+  pos: 341,
+  code: 'BABEL_PARSE_ERROR',
+  reasonCode: 'UnexpectedToken'
+}
+Successfully compiled 19 files with Babel (1827ms).
+Successfully compiled 1 file with Babel (264ms).
+Successfully compiled 1 file with Babel (112ms).
+SyntaxError: /opt/superset_roma/ptc/src/PivotTableC.jsx: Identifier 'metricsFD' has already been declared. (51:31)
+
+  49 |     return agg.replaceAll('#', field)
+  50 |   }
+> 51 |   const handleMetricsChange = (metricsFD, i, agg, field) => {
+     |                                ^
+  52 |     const metricsFD = metricsFormData
+  53 |     const newMetricsFD = {
+  54 |       ...metricsFormData,
+    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
+    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
+    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:1731:12)
+    at TypeScriptScopeHandler.declareName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:1711:14)
+    at TypeScriptScopeHandler.declareName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7616:11)
+    at Parser.checkLVal (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11158:24)
+    at Parser.checkLVal (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:10085:15)
+    at Parser.checkParams (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12913:12)
+    at Parser.<anonymous> (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12888:14) {
+  loc: Position { line: 51, column: 31 },
+  pos: 2124,
+  code: 'BABEL_PARSE_ERROR',
+  reasonCode: 'VarRedeclaration'
+}
+Successfully compiled 1 file with Babel (107ms).
+Successfully compiled 1 file with Babel (123ms).
+Successfully compiled 1 file with Babel (142ms).
+SyntaxError: /opt/superset_roma/ptc/src/PivotTableC.jsx: Identifier 'metricsFD' has already been declared. (51:31)
+
+  49 |     return agg.replaceAll('#', field)
+  50 |   }
+> 51 |   const handleMetricsChange = (metricsFD, i, agg, field) => {
+     |                                ^
+  52 |     const metricsFD = metricsFormData
+  53 |     const newMetricsFD = {
+  54 |       ...metricsFormData,
+    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
+    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
+    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:1731:12)
+    at TypeScriptScopeHandler.declareName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:1711:14)
+    at TypeScriptScopeHandler.declareName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7616:11)
+    at Parser.checkLVal (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11158:24)
+    at Parser.checkLVal (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:10085:15)
+    at Parser.checkParams (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12913:12)
+    at Parser.<anonymous> (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12888:14) {
+  loc: Position { line: 51, column: 31 },
+  pos: 2124,
+  code: 'BABEL_PARSE_ERROR',
+  reasonCode: 'VarRedeclaration'
+}
+Successfully compiled 1 file with Babel (119ms).
+Successfully compiled 1 file with Babel (138ms).
+Successfully compiled 1 file with Babel (129ms).
+SyntaxError: /opt/superset_roma/ptc/src/PivotTableC.jsx: Identifier 'metricsFD' has already been declared. (51:31)
+
+  49 |     return agg.replaceAll('#', field)
+  50 |   }
+> 51 |   const handleMetricsChange = (metricsFD, i, agg, field) => {
+     |                                ^
+  52 |     const metricsFD = metricsFormData
+  53 |     const newMetricsFD = {
+  54 |       ...metricsFormData,
+    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
+    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
+    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
+    at TypeScriptScopeHandler.checkRedeclarationInScope (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:1731:12)
+    at TypeScriptScopeHandler.declareName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:1711:14)
+    at TypeScriptScopeHandler.declareName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7616:11)
+    at Parser.checkLVal (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11158:24)
+    at Parser.checkLVal (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:10085:15)
+    at Parser.checkParams (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12913:12)
+    at Parser.<anonymous> (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12888:14) {
+  loc: Position { line: 51, column: 31 },
+  pos: 2124,
+  code: 'BABEL_PARSE_ERROR',
+  reasonCode: 'VarRedeclaration'
+}
+Successfully compiled 1 file with Babel (106ms).
+Successfully compiled 1 file with Babel (117ms).
+Successfully compiled 1 file with Babel (159ms).
+Successfully compiled 1 file with Babel (113ms).
+Successfully compiled 1 file with Babel (146ms).
+Successfully compiled 1 file with Babel (176ms).
+Successfully compiled 1 file with Babel (156ms).
+Successfully compiled 1 file with Babel (140ms).
+Successfully compiled 1 file with Babel (143ms).
+Successfully compiled 1 file with Babel (155ms).
+Successfully compiled 1 file with Babel (122ms).
+Successfully compiled 1 file with Babel (150ms).
+Successfully compiled 1 file with Babel (190ms).
+Successfully compiled 1 file with Babel (150ms).
+Successfully compiled 1 file with Babel (143ms).

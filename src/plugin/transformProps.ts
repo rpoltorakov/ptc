@@ -67,15 +67,49 @@ export default function transformProps(chartProps: ChartProps) {
     return dimensions
   }
 
+  const parseFieldInSQL = (expression:string) => {
+    const matched = expression.match(/".*"/gi)
+  }
   // Собрать метрики в массив
-  const collectMetrics = (formData:any) => {
-    return formData.metrics.map((metric:any) => {
-      if (typeof metric === 'string') {
-        return metric
-      } else {
+  const collectMetrics = (formData:any, type:'def'|'aggs'|'fields') => {
+    if (type === 'def') {
+      return formData.metrics.map((metric:any) => {
+        if (typeof metric === 'string') {
+          return metric
+        }
         return metric.label
-      }
-    });
+      })
+    }
+    if (type === 'aggs') {
+      return Array.from(new Set(formData.metrics.map((metric:any) => {
+        if (typeof metric === 'string') {
+          return metric
+        } 
+        if (metric.expressionType === 'SIMPLE') {
+          return metric.aggregate
+        }
+        if (metric.expressionType === 'SQL') {
+          const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
+          return metric.sqlExpression.replaceAll(field, '#')
+          // return metric.sqlExpression
+        }
+      })))
+    }
+    if (type === 'fields') {
+      return Array.from(new Set(formData.metrics.map((metric:any) => {
+        if (typeof metric === 'string') {
+          return metric
+        }
+        if (metric.expressionType === 'SIMPLE') {
+          return metric.column.column_name
+        }
+        if (metric.expressionType === 'SQL') {
+          const matched = metric.sqlExpression.match(/".*"/gi)
+          return matched ? matched[0].slice(1,-1) : 'fieldNotFound'
+        }  
+        
+      })))
+    }
   }
   // console.log('dimensions', dimensions)
   return {
@@ -92,6 +126,8 @@ export default function transformProps(chartProps: ChartProps) {
     groupbyRows,
     // dimensions: collectDefaultDimensions(groupbyColumns, groupbyRows),
     dimensions,
-    metrics: collectMetrics(formData),
+    metrics: collectMetrics(formData, 'def'),
+    metricsAggs: collectMetrics(formData, 'aggs'),
+    metricsFields: collectMetrics(formData, 'fields')
   };
 }
