@@ -1,9 +1,10 @@
 import React from "react";
 import ToggleSwitch from "./ToggleSwitch";
 import Switch from "react-switch";
-import { checkedIcon, uncheckedIcon } from "./styles";
+import { checkedIcon, uncheckedIcon, UncheckedIconC, CheckedIconC } from "./styles";
 import { MetricSelect } from "./MetricSelect";
 import { Button, Space } from "antd";
+import Icon, { ArrowUpOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
 export const Metrics = ({
   isOpened, 
@@ -15,7 +16,6 @@ export const Metrics = ({
   metricsFormData,
   handleMetricsChange,
   handleDelete,
-  metricsActive,
   handleAddMetric
 }) => {
   // console.log('metrics', metricsAggs, metricsFields)
@@ -25,20 +25,25 @@ export const Metrics = ({
     <div
       className={`metrics ${isOpened ? 'metrics-opened' : ''}`}
     >
-      <div>
-      <label>
-        <Switch 
-          onChange={handleChange} 
-          checked={checked}
-          uncheckedIcon={uncheckedIcon}
-          checkedIcon={checkedIcon}
-          onColor='#888'
-        />
-      </label>
+      <div style={{ marginBottom: '1em', display: 'flex' }}>
+        {/* <uncheckedIcon /> */}
+        {/* <Icon component={UncheckedIconC} style={{ margin: 'auto 0.3em auto 0' }}/> */}
+        <ArrowLeftOutlined style={{ color: '#156378', fontSize: '2em', margin: '0 0.3em auto 0' }} />
+        <label>
+          <Switch 
+            onChange={handleChange} 
+            checked={checked}
+            uncheckedIcon
+            checkedIcon
+            onColor='#888'
+          />
+        </label>
+        {/* <Icon component={CheckedIconC} style={{ margin: 'auto 0 auto 0.3em'}}/> */}
+        <ArrowUpOutlined style={{ color: '#156378', fontSize: '2em', margin: '0 0 auto 0.3em'}} />
+        {/* <checkedIcon /> */}
       </div>
 
       {metrics.map((metric, i) => (
-        metricsActive[i] &&
         <MetricSelect 
           metricsFields={metricsFields}
           metricsAggs={metricsAggs}
@@ -52,7 +57,9 @@ export const Metrics = ({
       ))}
 
       <Button
+        type="primary"
         onClick={handleAddMetric}
+        style={{ marginTop: '1em' }}
       > + </Button>
     </div>
   </>)

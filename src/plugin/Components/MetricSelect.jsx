@@ -11,12 +11,16 @@ export const MetricSelect = ({
   handleMetricsChange,
   handleDelete
 }) => {
-  // console.log('metricsselect:',metricsAggs, metricsFields)
   const aggs = metricsAggs.map(el => ({ value: el, label: el }))
+
   const fields = metricsFields.map(el => ({ value: el, label: el }))
-  
-  const [selectedAgg, setSelectedAgg] = React.useState(aggs[i].label)
-  const [selectedField, setSelectedField] = React.useState(fields[i].label)
+
+
+  const field = metrics[i].match(/".*"/gi) ? metrics[i].match(/".*"/gi)[0] : '' 
+  const [selectedAgg, setSelectedAgg] = React.useState(metrics[i].replaceAll(field, '#'))
+
+  const matched = metrics[i].match(/".*"/gi) 
+  const [selectedField, setSelectedField] = React.useState(matched ? matched[0].slice(1,-1) : 'fieldNotFound')
   
   React.useEffect(() => {
     handleMetricsChange(metricsFormData, i, selectedAgg, `\"${selectedField}\"`);
@@ -33,13 +37,12 @@ export const MetricSelect = ({
     handleDelete(i)
   }
 
-  
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', gap: '1em' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '.35em' }}>
       <div>
         <Select
-          defaultValue={aggs[i].label}
+          // defaultValue={aggs[i].label}
+          defaultValue={selectedAgg}
           style={{
             width: 200,
           }}
@@ -51,7 +54,8 @@ export const MetricSelect = ({
 
       <div>
         <Select
-          defaultValue={fields[i].label}
+          // defaultValue={fields[i].label}
+          defaultValue={selectedField}
           style={{
             width: 200,
           }}
@@ -60,7 +64,7 @@ export const MetricSelect = ({
         />
       </div>
 
-      <div>
+      <div style={{ marginLeft: '1em'}}>
         <Button
           onClick={handleDeleteButton} 
           type="primary" 

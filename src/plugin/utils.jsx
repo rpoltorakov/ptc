@@ -2,7 +2,7 @@
   Получение уникальных значений измерений
   из массива данных
 */
-export const getUniqueValues = (data, dims, isMetricsInCols, metrics, metricsActive) => {
+export const getUniqueValues = (data, dims, isMetricsInCols, metrics) => {
   let uniqueCols = []
   dims.forEach((dim, i) => {
     const unique = [...new Set(data.map((item) => {
@@ -20,9 +20,7 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics, metricsAct
   // Обработка выбора расположения метрик
   // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
   if (isMetricsInCols) {
-    if (metricsActive) {
-      uniqueCols.push(metrics)
-    }
+    uniqueCols.push(metrics)
   }
   return uniqueCols
 }

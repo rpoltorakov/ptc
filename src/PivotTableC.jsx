@@ -19,7 +19,6 @@ export default function PivotTableC(props) {
   console.log('props', props)
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
   const [metrics, setMetrics] = React.useState([...props.metrics])
-  const [metricsActive, setMetricsActive] = React.useState([...props.metrics.map(el => true)])
   const [metricsAggs, setMetricsAggs] = React.useState([...props.metricsAggs])
   const [metricsFields, setMetricsFields] = React.useState([...props.metricsFields])
   const [isMetricsOpened, setIsMetricsOpened] = React.useState(false);
@@ -31,26 +30,25 @@ export default function PivotTableC(props) {
   
   const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
   
-  // изменение стейта метрик
+  // изменение agg + field метрик
   const handleMetricsChange = (metricsFD, i, agg, field) => {
     const generateSQLExpr = (agg, field) => {
       return agg.replaceAll('#', field)
     }
     // const metricsFD = metricsFormData
     const newMetricsFD = [...metricsFormData]
-    const sqlEx = generateSQLExpr(agg, field)
     newMetricsFD[i] = {
       ...metricsFormData[i],
       sqlExpression: generateSQLExpr(agg, field),
       label: generateSQLExpr(agg, field)
     }
+    console.log("🚀 ~ newMetricsFD:", newMetricsFD)
     setMetricsFormData(newMetricsFD)
     setMetrics(collectMetrics(newMetricsFD, 'def'))
   }
   
   // Функция получения данных
   async function getNewData(formData, dims, metricsFormData)  {
-    
     const newFormData = {
       ...formData,
       metrics: metricsFormData,
@@ -62,38 +60,36 @@ export default function PivotTableC(props) {
     
     const newData = await ApiV1.getChartData(buildQuery(newFormData))
     setData([...newData.result[0].data])
-    setMetrics([...props.metrics])
+
+    // по идее не нужно, т.к. стейты метрик обновляются там где они изменяются, а запрос на данные не меняет метрики
+    // setMetrics([...props.metrics])
   }
   // на изменение колонок/строк - запрос на апи
   useEffect(() => {
     getNewData(props.formData, dims, metricsFormData)
   }, [dims, metricsFormData])
   useEffect(() => {
-    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, metricsActive))
-    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, metricsActive))
+    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics))
+    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics))
   }, [dims, data, metricsFormData, isMetricsInCols])
   
   const handleMetricsSwitch = () => {
     setIsMetricsInCols(!isMetricsInCols)
   }
   const handleDeleteMetric = (index) => {
-    console.log('----- handleDelete -----')
-    const newAr = metricsActive.map((el, i) => {
-      // console.log(el, i, index)
-      if (i === index) {
-        return false
-      }
-      return el
-    })
-    console.log("🚀 ~ newAr:", newAr)
-    setMetricsActive([...newAr])
-    console.log("🚀 ~ metricsActive:", metricsActive)
+    setMetricsFormData([...metricsFormData.filter((el, i) => i !== index)])
+    setMetrics([...metrics.filter((el, i) => i !== index)])
+    // setMetricsAggs([...metricsAggs.filter((el, i) => i !== index)])
+    // setMetricsFields([...metricsFields.filter((el, i) => i !== index)])
   }
   const handleAddMetric = () => {
+    console.log('metrics', metrics)
+    // При нажатии на "+" - добавить копию последней метрики
+    setMetricsFormData([...metricsFormData, metricsFormData[metricsFormData.length-1]])
+    console.log('------', [...metrics, metrics[metrics.length-1]])
     setMetrics([...metrics, metrics[metrics.length-1]])
-    setMetricsActive([...metricsActive, true])
-    setMetricsAggs([...metricsAggs, metricsAggs[metricsAggs.length-1]])
-    setMetricsFields([...metricsFields, metricsFields[metricsFields.length-1]])
+    // setMetricsAggs([...metricsAggs, metricsAggs[metricsAggs.length-1]])
+    // setMetricsFields([...metricsFields, metricsFields[metricsFields.length-1]])
   }
 
   const rootElem = createRef();
@@ -176,7 +172,6 @@ export default function PivotTableC(props) {
                     metricsFields={metricsFields}
                     metricsFormData={metricsFormData}
                     handleMetricsChange={handleMetricsChange}
-                    metricsActive={metricsActive}
                     handleAddMetric={handleAddMetric}
                   />}
                   trigger='click'
