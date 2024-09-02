@@ -7,44 +7,30 @@ import { DimPool } from './plugin/Components/DimPool';
 import { Metrics } from './plugin/Components/Metrics';
 import { Rows } from './plugin/Components/Rows';
 import { Styles } from './plugin/Components/styles';
-import { getUniqueValues } from './plugin/utils';
+import { collectMetrics, getUniqueValues } from './plugin/utils';
 import { Button, Popover } from 'antd';
 import { DownOutlined } from '@ant-design/icons'
 import { SubtotalsMenu } from './plugin/Components/SubtotalsMenu';
 
 
 export default function PivotTableC(props) {
-  const { 
-    height,
-    groupbyColumns,
-    groupbyRows,
-    dimensions
-  } = props;
-  const {
-    grandTotalsOn,
-    subtotalsOn
-  } = props.formData
+  const { height, groupbyColumns, groupbyRows, dimensions } = props;
+  const { grandTotalsOn, subtotalsOn } = props.formData
   console.log('props', props)
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
   const [metrics, setMetrics] = React.useState([...props.metrics])
+  const [metricsActive, setMetricsActive] = React.useState([...props.metrics.map(el => true)])
+  const [metricsAggs, setMetricsAggs] = React.useState([...props.metricsAggs])
+  const [metricsFields, setMetricsFields] = React.useState([...props.metricsFields])
   const [isMetricsOpened, setIsMetricsOpened] = React.useState(false);
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках)
   const [data, setData] = React.useState([...props.data])
-  const [subtotal, setSubtotal] = React.useState(false)
-  // const [showSubtotal, setShowSubtotal] = React.useState(false)
-  // const [subtotalInCols, setSubtotalInCols] = React.useState(true)
-
+  
   const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
   const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics))
-
-  const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
-
   
-
-  // useEffect(() => {
-  //   console.log('metricsFormData', metricsFormData)
-  // }, [metricsFormData])
-
+  const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
+  
   // изменение стейта метрик
   const handleMetricsChange = (metricsFD, i, agg, field) => {
     const generateSQLExpr = (agg, field) => {
@@ -52,17 +38,18 @@ export default function PivotTableC(props) {
     }
     // const metricsFD = metricsFormData
     const newMetricsFD = [...metricsFormData]
+    const sqlEx = generateSQLExpr(agg, field)
     newMetricsFD[i] = {
       ...metricsFormData[i],
-      sqlExpression: generateSQLExpr(agg, field)
+      sqlExpression: generateSQLExpr(agg, field),
+      label: generateSQLExpr(agg, field)
     }
-    console.log("🚀 ~ newMetricsFD:", newMetricsFD)
     setMetricsFormData(newMetricsFD)
+    setMetrics(collectMetrics(newMetricsFD, 'def'))
   }
-
+  
   // Функция получения данных
   async function getNewData(formData, dims, metricsFormData)  {
-    console.log("🚀 ~ metricsFormData:", metricsFormData)
     
     const newFormData = {
       ...formData,
@@ -72,35 +59,46 @@ export default function PivotTableC(props) {
       groupby: [...dims[1], ...dims[2]],
     }
     delete newFormData.queries
-
+    
     const newData = await ApiV1.getChartData(buildQuery(newFormData))
-    console.log("🚀 ~ buildQuery(newFormData):", buildQuery(newFormData))
-    console.log("🚀 ~ newData:", newData.result[0].data)
     setData([...newData.result[0].data])
+    setMetrics([...props.metrics])
   }
   // на изменение колонок/строк - запрос на апи
   useEffect(() => {
     getNewData(props.formData, dims, metricsFormData)
-  }, [dims, isMetricsInCols, metricsFormData])
+  }, [dims, metricsFormData])
   useEffect(() => {
-    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, props.metrics))
-    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, props.metrics))
-  }, [dims, data])
-  // на изменение выбранных метрик
-  // useEffect(() => {
-  //   getNewData(props.formData, dims)
-  // }, [metricsFormData])
-
+    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, metricsActive))
+    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, metricsActive))
+  }, [dims, data, metricsFormData, isMetricsInCols])
+  
   const handleMetricsSwitch = () => {
     setIsMetricsInCols(!isMetricsInCols)
   }
-  // const handleSubtotalsSwitch = () => {
-  //   setShowSubtotal(!showSubtotal)
-  // }
+  const handleDeleteMetric = (index) => {
+    console.log('----- handleDelete -----')
+    const newAr = metricsActive.map((el, i) => {
+      // console.log(el, i, index)
+      if (i === index) {
+        return false
+      }
+      return el
+    })
+    console.log("🚀 ~ newAr:", newAr)
+    setMetricsActive([...newAr])
+    console.log("🚀 ~ metricsActive:", metricsActive)
+  }
+  const handleAddMetric = () => {
+    setMetrics([...metrics, metrics[metrics.length-1]])
+    setMetricsActive([...metricsActive, true])
+    setMetricsAggs([...metricsAggs, metricsAggs[metricsAggs.length-1]])
+    setMetricsFields([...metricsFields, metricsFields[metricsFields.length-1]])
+  }
 
   const rootElem = createRef();
 
-  // колбэк для драг'н'дропа
+   // колбэк для драг'н'дропа
   const handleDragEnd = (result) => {
     const reorder = (list, startIndex, endIndex) => {
       const result = Array.from(list);
@@ -135,14 +133,12 @@ export default function PivotTableC(props) {
       const items = reorder(dims[sInd], source.index, destination.index);
       const newState = [...dims];
       newState[sInd] = items;
-      // console.log('Dims changed!', dims)
       setDims(newState);
     } else {
       const result = move(dims[sInd], dims[dInd], source, destination);
       const newState = [...dims];
       newState[sInd] = result[sInd];
       newState[dInd] = result[dInd];
-      // console.log('Dims changed!', dims)
       setDims(newState);
     }
   }
@@ -175,10 +171,13 @@ export default function PivotTableC(props) {
                     metrics={metrics} 
                     checked={isMetricsInCols}
                     handleChange={handleMetricsSwitch}
-                    metricsAggs={[...props.metricsAggs]}
-                    metricsFields={[...props.metricsFields]}
+                    handleDelete={handleDeleteMetric}
+                    metricsAggs={metricsAggs}
+                    metricsFields={metricsFields}
                     metricsFormData={metricsFormData}
                     handleMetricsChange={handleMetricsChange}
+                    metricsActive={metricsActive}
+                    handleAddMetric={handleAddMetric}
                   />}
                   trigger='click'
                   placement="bottomLeft"

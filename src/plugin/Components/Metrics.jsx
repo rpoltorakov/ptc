@@ -13,11 +13,13 @@ export const Metrics = ({
   metricsAggs, 
   metricsFields, 
   metricsFormData,
-  handleMetricsChange
+  handleMetricsChange,
+  handleDelete,
+  metricsActive,
+  handleAddMetric
 }) => {
-  const handleClick = () => {
-    handleChange()
-  }
+  // console.log('metrics', metricsAggs, metricsFields)
+
   return (
   <>
     <div
@@ -36,18 +38,22 @@ export const Metrics = ({
       </div>
 
       {metrics.map((metric, i) => (
+        metricsActive[i] &&
         <MetricSelect 
           metricsFields={metricsFields}
-          metricsAggs={metricsAggs} 
-          metrics={metrics} 
-          i={i} 
+          metricsAggs={metricsAggs}
+          metrics={metrics}
+          i={i}
           key={i+'metrics'}
           metricsFormData={metricsFormData}
           handleMetricsChange={handleMetricsChange}
+          handleDelete={handleDelete}
         />
       ))}
 
-      <Button> + </Button>
+      <Button
+        onClick={handleAddMetric}
+      > + </Button>
     </div>
   </>)
 }

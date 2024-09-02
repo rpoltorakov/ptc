@@ -70,7 +70,10 @@ export default function transformProps(chartProps: ChartProps) {
   const parseFieldInSQL = (expression:string) => {
     const matched = expression.match(/".*"/gi)
   }
-  // Собрать метрики в массив
+  
+  /*
+    Функция собирания метрик из formData
+  */
   const collectMetrics = (formData:any, type:'def'|'aggs'|'fields') => {
     if (type === 'def') {
       return formData.metrics.map((metric:any) => {

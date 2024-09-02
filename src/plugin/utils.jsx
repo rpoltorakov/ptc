@@ -2,9 +2,9 @@
   Получение уникальных значений измерений
   из массива данных
 */
-export const getUniqueValues = (data, dims, isMetricsInCols, metrics) => {
+export const getUniqueValues = (data, dims, isMetricsInCols, metrics, metricsActive) => {
   let uniqueCols = []
-  dims.forEach((dim) => {
+  dims.forEach((dim, i) => {
     const unique = [...new Set(data.map((item) => {
       return item[dim]
     }))]
@@ -20,15 +20,23 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics) => {
   // Обработка выбора расположения метрик
   // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
   if (isMetricsInCols) {
-    uniqueCols.push(metrics)
+    if (metricsActive) {
+      uniqueCols.push(metrics)
+    }
   }
   return uniqueCols
 }
 
+/*
+  Проверка значения на null или undefined
+*/
 export const renderValue = (value) => {
-  return value ? value : '\u00A0'
+  return value ? value : '\u00A0' // =nbsp
 }
 
+/*
+  Получение размера span в зависимости от уровня вложенности
+*/
 export const getDimSpan = (arr, level) => {
   let remainder = arr.slice(level+1)
   if (!remainder) {
@@ -38,6 +46,9 @@ export const getDimSpan = (arr, level) => {
   }
 }
 
+/*
+  Вспомогательная функция для алгоритмов построения колонок/столбцов
+*/
 export const getMultiplicators = (ar) => {
   const lenArr = ar.map(el => el.length)
   const result = []
@@ -57,33 +68,46 @@ export const getMultiplicators = (ar) => {
   return result
 }
 
-
-async function clickHandler() {
-  const newFormData = {
-    ...props.formData,
-    cols: ['genre']
+/*
+  Функция собирания метрик из formData
+*/
+export const collectMetrics = (formDataMetrics, type) => {
+  if (type === 'def') {
+    return formDataMetrics.map((metric) => {
+      if (typeof metric === 'string') {
+        return metric
+      }
+      return metric.label
+    })
   }
-  const dataa = await ApiV1.getChartData(buildQuery(newFormData))
-
-  setData(dataa.result[0].data)
-  let sum = 0
-  dataa.result[0].data.forEach((o) => {
-    sum += o["SUM(global_sales)"]
-  })
-  setMetric(sum)
-}
-async function clickHandler1() {
-
-  const newFormData = {
-    ...props.formData,
-    cols: ['platform']
+  if (type === 'aggs') {
+    return Array.from(new Set(formDataMetrics.map((metric) => {
+      if (typeof metric === 'string') {
+        return metric
+      } 
+      if (metric.expressionType === 'SIMPLE') {
+        return metric.aggregate
+      }
+      if (metric.expressionType === 'SQL') {
+        const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
+        return metric.sqlExpression.replaceAll(field, '#')
+        // return metric.sqlExpression
+      }
+    })))
   }
-  const dataa = await ApiV1.getChartData(buildQuery(newFormData))
-
-  setData(dataa.result[0].data)
-  let sum = 0
-  dataa.result[0].data.forEach((o) => {
-    sum += o["SUM(global_sales)"]
-  })
-  setMetric(sum)
+  if (type === 'fields') {
+    return Array.from(new Set(formDataMetrics.map((metric) => {
+      if (typeof metric === 'string') {
+        return metric
+      }
+      if (metric.expressionType === 'SIMPLE') {
+        return metric.column.column_name
+      }
+      if (metric.expressionType === 'SQL') {
+        const matched = metric.sqlExpression.match(/".*"/gi)
+        return matched ? matched[0].slice(1,-1) : 'fieldNotFound'
+      }  
+      
+    })))
+  }
 }
