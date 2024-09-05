@@ -5,9 +5,9 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   .app-ptc {
     padding: 4em;
     text-align: center;
-    background-color: #282c34;
+    background-color: #ffffff;
     overflow: scroll;
-    color: white;
+    color: #222429;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -22,15 +22,12 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   .table-pvc {
     margin: 0;
     width: 100%;
-    border: 1px solid white;
+    border: 1px solid #c0c0c0;
     border-collapse: collapse;
   }
 
   td {
-    border: 1px solid white;
-  }
-
-  .wrapper 
+    border: 1px solid #c0c0c0;
   }
 
   .tableWrapper {
@@ -49,7 +46,8 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   }
 
   .dim-pool {
-    border: 2px solid gray;
+    background: #fbfbfb;
+    border: 2px solid #c0c0c0;
     display: flex;
     justify-content: flex-start;
   }
@@ -69,12 +67,12 @@ export const Styles = styled.div<PivotTableCStylesProps>`
 
   .dim-pool-big {
     margin-bottom: 1em;
-
+    min-height: 4em;
   }
 
   .dim-elem {
     margin: 0.5em;
-    border: 1px solid gray;
+    border: 1px solid #c0c0c0;
     border-radius: 2px;
     padding:  0.5em 1.5em;
     cursor: grab;
@@ -108,7 +106,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
     gap: 0.3em;
     padding: 1em;
     min-height: 10em;
-    background-color: #3e4148;
+    background-color: #ffffff;
     z-index: 10;
     transition: opacity .1s linear;
     
@@ -136,7 +134,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   }
   
   .tdv {
-    color: white;
+    color: #222429;
   }
 
   .tdv-total {
@@ -152,6 +150,9 @@ export const Styles = styled.div<PivotTableCStylesProps>`
     display: flex;
     flex-direction: row;
     gap: 1em;
+  }
+  .table > thead > tr > th {
+    border-bottom: 1px solid #c0c0c0;
   }
 `;
 

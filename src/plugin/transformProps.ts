@@ -48,31 +48,14 @@ export default function transformProps(chartProps: ChartProps) {
     groupbyColumns, 
     groupbyRows 
   } = formData;
-  // console.log('formData', formData)
   const data = queriesData[0].data as TimeseriesDataRecord[];
-  
-  // Собрать измерения использованные как дефолтные в один массив с пулом
-  const collectDefaultDimensions = (groupbyColumns: string[], groupbyRows: string[]) => {
-    // добавить если еще не существует
-    groupbyColumns.forEach((col) => {
-      if (dimensions.indexOf(col) === -1) {
-        dimensions.push(col);
-      }
-    })
-    groupbyRows.forEach((row) => {
-      if (dimensions.indexOf(row) === -1) {
-        dimensions.push(row);
-      }
-    })
-    return dimensions
-  }
-
-  const parseFieldInSQL = (expression:string) => {
-    const matched = expression.match(/".*"/gi)
-  }
   
   /*
     Функция собирания метрик из formData
+    три варианта работы:
+      1. default - собирает лейблы
+      2. aggs - собирает из sqlExpression формулы агрегаций регексом
+      3. fiels - собирает из sqlExpression поля регексом
   */
   const collectMetrics = (formData:any, type:'def'|'aggs'|'fields') => {
     if (type === 'def') {
@@ -92,9 +75,9 @@ export default function transformProps(chartProps: ChartProps) {
           return metric.aggregate
         }
         if (metric.expressionType === 'SQL') {
-          const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
-          return metric.sqlExpression.replaceAll(field, '#')
-          // return metric.sqlExpression
+          // const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
+          // return metric.sqlExpression.replaceAll(field, '#')
+          return metric.sqlExpression.replaceAll(/".*?"/gi, '#')
         }
       })))
     }
@@ -107,14 +90,13 @@ export default function transformProps(chartProps: ChartProps) {
           return metric.column.column_name
         }
         if (metric.expressionType === 'SQL') {
-          const matched = metric.sqlExpression.match(/".*"/gi)
+          const matched = metric.sqlExpression.match(/".*?"/gi)
           return matched ? matched[0].slice(1,-1) : 'fieldNotFound'
-        }  
-        
+        }
       })))
     }
   }
-  // console.log('dimensions', dimensions)
+
   return {
     width,
     height,
@@ -127,7 +109,6 @@ export default function transformProps(chartProps: ChartProps) {
     setDataMask,
     groupbyColumns,
     groupbyRows,
-    // dimensions: collectDefaultDimensions(groupbyColumns, groupbyRows),
     dimensions,
     metrics: collectMetrics(formData, 'def'),
     metricsAggs: collectMetrics(formData, 'aggs'),

@@ -15,11 +15,10 @@ export function DimPool(props) {
             ref={provided.innerRef}
             {...provided.droppableProps}
             className={
-              ` 
-                ${props.metrics ? 'dim-pool-metrics' : ''} 
+              ` ${props.metrics ? 'dim-pool-metrics' : ''} 
                 ${props.vertical ? 'dim-pool-col' : 'dim-pool-row'} 
                 dim-pool 
-              `+ props.classes
+                ${props.classes ? props.classes : ''}` 
             }
             style={getListStyle(snapshot.isDraggingOver)}
           >

@@ -17,9 +17,9 @@ export const MetricSelect = ({
 
 
   const field = metrics[i].match(/".*"/gi) ? metrics[i].match(/".*"/gi)[0] : '' 
-  const [selectedAgg, setSelectedAgg] = React.useState(metrics[i].replaceAll(field, '#'))
+  const [selectedAgg, setSelectedAgg] = React.useState(metrics[i].replaceAll(/".*?"/gi, '#')) // .replaceAll(/".*?"/gi, '#')
 
-  const matched = metrics[i].match(/".*"/gi) 
+  const matched = metrics[i].match(/".*?"/gi) 
   const [selectedField, setSelectedField] = React.useState(matched ? matched[0].slice(1,-1) : 'fieldNotFound')
   
   React.useEffect(() => {
@@ -69,6 +69,7 @@ export const MetricSelect = ({
           onClick={handleDeleteButton} 
           type="primary" 
           danger
+          disabled={i===0?true:false}
         > Delete </Button>
       </div>
     </div>

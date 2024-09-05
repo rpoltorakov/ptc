@@ -109,3 +109,29 @@ export const collectMetrics = (formDataMetrics, type) => {
     })))
   }
 }
+
+
+/*
+  Функция создания массива для сабтоталов
+*/
+export const getSubtotalsDims = (dims) => {
+  /*
+    Если есть массив dims[i] (например, строки) - то для получения сабтоталов
+    нужно сделать запросы на данные с 
+      groupbyRows = dims[i][0]
+      groupbyRows = [dims[i][0], dims[i][1]]
+      groupbyRows = [dims[i][0], dims[i][1], dims[i][2]]
+    и тд
+    Пример: 
+      Нужны сабтоталы по строкам dims[1] = ['first_time_dev', 'developer_type']
+      Тогда, нужно сделать два запроса:
+        1 - с groupbyRows = ['first_time_dev']
+        2 - с groupbyRows = ['first_time_dev', 'developer_type']
+    
+    Данная функция раскладывает ['first_time_dev', 'developer_type'] на
+    ['first_time_dev'] и ['first_time_dev', 'developer_type']
+  */
+  return dims.map((el, i) => {
+    return dims.slice(0, i+1)
+  })
+}

@@ -25,10 +25,7 @@ export default function buildQuery(formData: QueryFormData) {
   
     return buildQueryContext(formData, baseQueryObject => {
 
-    const { ownState } = baseQueryObject
-
-    // Columns для агрегации данных, не колонки таблицы
-    // В бекенд должно отправляться как атрибут "columns", результат обрабатывается в UI
+    // const { ownState } = baseQueryObject
     const columns = Array.from(
       new Set([
         ...ensureIsArray(groupbyColumns),
@@ -41,19 +38,12 @@ export default function buildQuery(formData: QueryFormData) {
         label: col,
         expressionType: 'SQL',
       } as AdhocColumn;
-      return col
     })
-    // Агрегация происходит только в атрибуте "columns"
-    // Cols, rows, dimensions - нужны только в UI, 
-    // для агрегации данных нужен только columns
-    // console.log(formData)
     
     return [
     {
       ...baseQueryObject,
-      // columns,
       groupby: columns
-      // ownState
     },
   ]});
 }

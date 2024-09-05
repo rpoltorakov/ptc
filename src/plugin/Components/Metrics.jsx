@@ -4,7 +4,7 @@ import Switch from "react-switch";
 import { checkedIcon, uncheckedIcon, UncheckedIconC, CheckedIconC } from "./styles";
 import { MetricSelect } from "./MetricSelect";
 import { Button, Space } from "antd";
-import Icon, { ArrowUpOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import Icon, { InsertRowLeftOutlined, InsertRowAboveOutlined } from '@ant-design/icons';
 
 export const Metrics = ({
   isOpened, 
@@ -28,7 +28,7 @@ export const Metrics = ({
       <div style={{ marginBottom: '1em', display: 'flex' }}>
         {/* <uncheckedIcon /> */}
         {/* <Icon component={UncheckedIconC} style={{ margin: 'auto 0.3em auto 0' }}/> */}
-        <ArrowLeftOutlined style={{ color: '#156378', fontSize: '2em', margin: '0 0.3em auto 0' }} />
+        <InsertRowLeftOutlined style={{ color: '#555555', fontSize: '2em', margin: '0 0.3em auto 0' }} />
         <label>
           <Switch 
             onChange={handleChange} 
@@ -39,7 +39,7 @@ export const Metrics = ({
           />
         </label>
         {/* <Icon component={CheckedIconC} style={{ margin: 'auto 0 auto 0.3em'}}/> */}
-        <ArrowUpOutlined style={{ color: '#156378', fontSize: '2em', margin: '0 0 auto 0.3em'}} />
+        <InsertRowAboveOutlined style={{ color: '#555555', fontSize: '2em', margin: '0 0 auto 0.3em'}} />
         {/* <checkedIcon /> */}
       </div>
 

@@ -31,7 +31,7 @@ export const ColumnHeaders = ({ colsArr, rowsArr, isMetricsInCols, showTotal }) 
       <tr key={el.toString()+i}>
         {rowsArr.map((el, i) => (
           <th 
-            className='td' 
+            className='tdv' 
             key={el.toString()+i.toString()+'nullCross'}
           />
         ))}
