@@ -2,7 +2,10 @@
   Получение уникальных значений измерений
   из массива данных
 */
-export const getUniqueValues = (data, dims, isMetricsInCols, metrics) => {
+export const getUniqueValues = (data, dims, isMetricsInCols, metrics, extra) => {
+  console.group('getUniqueValues')
+  console.log("🚀 ~ extra:", extra)
+  
   let uniqueCols = []
   dims.forEach((dim, i) => {
     const unique = [...new Set(data.map((item) => {
@@ -16,12 +19,22 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics) => {
     }
     uniqueCols.push(unique ? unique : 'null')
   })
-
-  // Обработка выбора расположения метрик
-  // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
+  
+  if (extra) {
+    uniqueCols[uniqueCols.length-1].push(extra)
+  }
+  console.log("🚀 ~ uniqueCols:", uniqueCols)
+    // Обработка выбора расположения метрик
+    // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
   if (isMetricsInCols) {
     uniqueCols.push(metrics)
   }
+  
+  console.log("🚀 ~ uniqueCols:", uniqueCols)
+  // if (isMetricsInCols && subtotalsOn) {
+  //   uniqueCols.push('total')
+  // }
+  console.groupEnd()
   return uniqueCols
 }
 

@@ -2,6 +2,7 @@ import React from 'react'
 import { getDimSpan, getMultiplicators, renderValue } from '../utils'
 
 export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal }) => {
+  console.log("🚀🚀🚀🚀 ~ rowsArr:", colsArr)
   // декартово произведение массивов
   const cartesian = (...a) => {
     if (a.length === 1) {
@@ -80,7 +81,11 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal 
   }
 
   const rowsMatrix = cartesian(...rowsArr)
+  console.log("🚀 ~ rowsArr:", rowsArr)
+  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
+  console.log("🚀 ~ colsArr:", colsArr)
+  console.log("🚀 ~ colsMatrix:", colsMatrix)
   // let subtotal = 0
   const result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
   const dataRow = result.map((row, i) => {
