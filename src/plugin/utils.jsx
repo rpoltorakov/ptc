@@ -2,8 +2,8 @@
   Получение уникальных значений измерений
   из массива данных
 */
-export const getUniqueValues = (data, dims, isMetricsInCols, metrics, extra) => {
-  console.group('getUniqueValues')
+export const getUniqueValues = (data, dims, isMetricsInCols, metrics, subtotalsOn, extra) => {
+  console.groupCollapsed('getUniqueValues')
   console.log("🚀 ~ extra:", extra)
   
   let uniqueCols = []
@@ -11,6 +11,7 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics, extra) => 
     const unique = [...new Set(data.map((item) => {
       return item[dim]
     }))]
+    console.log("🚀 ~ unique:", unique)
   
     if (unique.length === 1 && unique[0] === undefined) return // не должны до сюда доходить
     if (unique.length === 1 && unique[0] !== undefined) {
@@ -20,10 +21,17 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics, extra) => 
     uniqueCols.push(unique ? unique : 'null')
   })
   
-  if (extra) {
-    uniqueCols[uniqueCols.length-1].push(extra)
+  console.log("🚀 ~ subtotalsColsOn:", subtotalsOn)
+  console.log("🚀 ~ extra:", extra)
+  if (subtotalsOn && extra) {
+    uniqueCols.forEach((el, i) => {
+      if (i !== 0) {
+        el.push(extra)
+      }
+    })
+    // uniqueCols[uniqueCols.length-1].push(extra)
   }
-  console.log("🚀 ~ uniqueCols:", uniqueCols)
+  // console.log("🚀 ~ uniqueCols:", uniqueCols)
     // Обработка выбора расположения метрик
     // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
   if (isMetricsInCols) {
@@ -148,3 +156,25 @@ export const getSubtotalsDims = (dims) => {
     return dims.slice(0, i+1)
   })
 }
+
+/*
+  Поиск подмассива в массиве
+*/
+export const findSubArray = (arr, subarr, from_index) => {
+  from_index = from_index || 0;
+
+  var i, found, j;
+  var last_check_index = arr.length - subarr.length;
+  var subarr_length = subarr.length;
+
+  position_loop:
+  for (i = from_index; i <= last_check_index; ++i) {
+      for (j = 0; j < subarr_length; ++j) {
+          if (arr[i + j] !== subarr[j]) {
+              continue position_loop;
+          }
+      }
+      return i;
+  }
+  return -1;
+};

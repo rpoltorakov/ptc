@@ -1,15 +1,44 @@
 import React from 'react'
-import { getDimSpan, getMultiplicators, renderValue } from '../utils'
+import { findSubArray, getDimSpan, getMultiplicators, renderValue } from '../utils'
 
-export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal }) => {
-  console.log("🚀🚀🚀🚀 ~ rowsArr:", colsArr)
-  // декартово произведение массивов
+export const Rows = ({
+    rowsArr,
+    colsArr,
+    data,
+    dims,
+    isMetricsInCols,
+    showTotal,
+    subtotalsColsOn,
+    subtotalsRowsOn,
+    subtotalsData
+  }) => {
   const cartesian = (...a) => {
     if (a.length === 1) {
       return a[0].map(e => [e])
     } else {
       return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
     }
+  }
+  // декартово произведение массивов
+  const createMatrix = (a, subtotalsRowsOn) => {
+    const cartesian = (...a) => {
+      if (a.length === 1) {
+        return a[0].map(e => [e])
+      } else {
+        return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+      }
+    }
+
+    let result = cartesian(...a)
+    console.log("🚀 ~ result:", result)
+    
+    if (subtotalsRowsOn) {
+      result = result.filter((el, i) => findSubArray(el, ['total', 'total']) === -1)
+      console.log("🚀 ~ result:", result)
+    }
+    
+    console.log("🚀 ~ result in createMatrix:", result)
+    return result
   }
 
   // удаление дубликатов
@@ -79,8 +108,9 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal 
       return result
     })
   }
-
-  const rowsMatrix = cartesian(...rowsArr)
+  console.groupCollapsed('Rows.jsx')
+  // const rowsMatrix = cartesian(...rowsArr)
+  const rowsMatrix = createMatrix(rowsArr, subtotalsRowsOn)
   console.log("🚀 ~ rowsArr:", rowsArr)
   console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
@@ -94,8 +124,8 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal 
       return value
     })
   })
-  
-  
+
+  console.groupEnd()
   return (
     <>
       {result.map((row, i) => (
@@ -103,19 +133,20 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal 
           { // заголовки в строках
             row.map((el, j) => (
               // если елемент существует - возвращаем ячейку
-              el || el === null ? 
+              // el || el === null || el === undefined ?
+              el || el === null ?
                 <td
-                  className='td header' 
+                  className='td header'
                   key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
                   rowSpan={el === '' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
-                > 
-                  {renderValue(el)} 
-                </td> 
+                >
+                  {renderValue(el)}
+                </td>
                 : // если нет: '' - для объединения ячеек --> null что бы объединить, '\u00A0' (nbsp) как значение измерения
                 (el === '') ? null : '\u00A0'
             ))
           }
-          
+
           { // ячейки данных
             dataRow[i].map((el, k) => (
               <td
@@ -124,7 +155,7 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal 
               >{el}</td>
             ))
           }
-          
+
 
           { // подитоги в строках
             !isMetricsInCols && showTotal &&
@@ -133,14 +164,14 @@ export const Rows = ({ rowsArr, colsArr, data, dims, isMetricsInCols, showTotal 
             >{getRowSubtotal(dataRow[i], 'SUM')}</td>
           }
 
-          
+
         </tr>
       ))}
-      
+
       { // подитоги в колонках
         isMetricsInCols && showTotal &&
         <tr>
-          <td 
+          <td
             className='tdv tdv-total'
             colSpan={rowsMatrix[rowsMatrix.length-1].length}
           >Total</td>

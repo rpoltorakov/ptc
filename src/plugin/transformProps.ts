@@ -46,7 +46,9 @@ export default function transformProps(chartProps: ChartProps) {
     headerText,
     dimensions, 
     groupbyColumns, 
-    groupbyRows 
+    groupbyRows,
+    subtotalsColsOn,
+    subtotalsRowsOn
   } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
   
@@ -112,6 +114,8 @@ export default function transformProps(chartProps: ChartProps) {
     dimensions,
     metrics: collectMetrics(formData, 'def'),
     metricsAggs: collectMetrics(formData, 'aggs'),
-    metricsFields: collectMetrics(formData, 'fields')
+    metricsFields: collectMetrics(formData, 'fields'),
+    subtotalsColsOn,
+    subtotalsRowsOn
   };
 }

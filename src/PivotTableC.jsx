@@ -14,9 +14,15 @@ import { SubtotalsMenu } from './plugin/Components/SubtotalsMenu';
 
 
 export default function PivotTableC(props) {
+  const [reload, setReload] = React.useState(false);
+  const handleReload = () => {
+    setReload(!reload)
+  }
+  console.groupCollapsed('root')
   console.log('props', props)
   const { height, groupbyColumns, groupbyRows, dimensions } = props;
-  const { grandTotalsOn, subtotalsOn } = props.formData
+  const { grandTotalsOn, subtotalsColsOn, subtotalsRowsOn } = props.formData
+  
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
   const [metrics, setMetrics] = React.useState([...props.metrics])
   const [metricsAggs, setMetricsAggs] = React.useState([...props.metricsAggs])
@@ -25,14 +31,12 @@ export default function PivotTableC(props) {
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках) = false
   const [data, setData] = React.useState([...props.data])
   const [subtotalsData, setSubtotalsData] = React.useState([])
-  
+
   const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
-  // console.log("🚀 ~ colsAr:", colsAr)
-  const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics, 'total'))
-  console.log("🚀🚀🚀🚀🚀🚀🚀🚀 ~ rowsAr:", rowsAr)
-  // console.log("🚀 ~ rowsAr:", rowsAr)
-  // console.log('-----getUniqueRows', getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics, 'total'))
-  
+  console.log("🚀 ~ colsAr:", colsAr)
+  const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics, subtotalsRowsOn, 'total'))
+  console.log("🚀 ~ rowsAr:", rowsAr)
+  console.groupEnd()
   const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
   
   // изменение agg + field метрик
@@ -69,56 +73,72 @@ export default function PivotTableC(props) {
   }
   
   useEffect(() => {
-    // console.log('------ Subtotals Changed!')
-    // console.log(subtotalsData)
+    console.log('------ Subtotals Changed!')
+    console.log('subtotalsData',subtotalsData)
   }, [subtotalsData]);
   
   // Функция получения данных сабтоталов
-  async function getSubtotalsData(formData, dims, metricsFormData, isMetricsInCols) {
-      const subtotalData = []
-      if (!isMetricsInCols) {
-        // console.log('----metrics in ROWS')
-        const cols = [] 
-        const rows = getSubtotalsDims(dims[2])
-        // console.log("🚀 ~ rows:", rows)
-        for (let i=0; i < rows.length; i++) {
-          const newFormData = {
-            ...formData,
-            metrics: metricsFormData,
-            groupbyColumns: cols,
-            groupbyRows: rows[i]
-          }
-          delete newFormData.queries
-          subtotalData.push((await ApiV1.getChartData(buildQuery(newFormData))).result[0].data) 
-        }
-      } else {
-        const cols = getSubtotalsDims(dims[1])
-        const rows = []
-        for (let i=0; i < cols.length; i++) {
-          const newFormData = {
-            ...formData,
-            metrics: metricsFormData,
-            groupbyColumns: cols[i],
-            groupbyRows: rows
-          }
-          delete newFormData.queries
-          const dataa = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
-          subtotalData.push(dataa) 
-        }
+  async function getSubtotalsDataRows(formData, dims, metricsFormData, isMetricsInCols) {
+    const subtotalData = []
+    const subtotalDataa = []
+    const cols = [] 
+    const rows = getSubtotalsDims(dims[2])
+    
+    for (let i=0; i < rows.length; i++) {
+      const newFormData = {
+        ...formData,
+        metrics: metricsFormData,
+        groupbyColumns: cols,
+        groupbyRows: rows[i]
       }
-      // console.log('---subtotal data:', subtotalData)
+      delete newFormData.queries
+      const dataa = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+      subtotalData.push({
+        data: dataa.map(el => i === 0 ? el : {...el, [rows[i][rows[i].length]]: 'total'}),
+        dims: rows[i],
+      })
+      subtotalDataa.push(...dataa)
+    }
+    setSubtotalsData([...subtotalData])
+    // setData([...data, ...subtotalDataa])
+  }  
+  
+  async function getSubtotalsDataCols(formData, dims, metricsFormData, isMetricsInCols) {
+    const subtotalData = []
+    const cols = getSubtotalsDims(dims[1])
+    const rows = []
+
+    for (let i=0; i < cols.length; i++) {
+      const newFormData = {
+        ...formData,
+        metrics: metricsFormData,
+        groupbyColumns: cols[i],
+        groupbyRows: rows
       }
+      delete newFormData.queries
+      const dataa = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+      subtotalData.push({
+        data: dataa,
+        dims: cols[i]
+      }) 
+    }
+    setSubtotalsData([...subtotalData])
+  }
+    
       // на изменение колонок/строк - запрос на апи
       useEffect(() => {
         getNewData(props.formData, dims, metricsFormData)
-      }, [dims, metricsFormData])
+      }, [dims, metricsFormData, reload])
       useEffect(() => {
+        console.log('data is changed', data)
         setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics))
-        setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, 'total'))
-      }, [dims, data, metricsFormData, isMetricsInCols])
+        setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'total'))
+      }, [dims, data, metricsFormData, isMetricsInCols, reload])
       useEffect(() => {
-        getSubtotalsData(props.formData, dims, metricsFormData, isMetricsInCols)
-      }, [dims, metricsFormData, isMetricsInCols]);
+        if (subtotalsRowsOn) {
+          getSubtotalsDataRows(props.formData, dims, metricsFormData, isMetricsInCols)
+        }
+      }, [dims, metricsFormData, isMetricsInCols, reload]);
       
       const handleMetricsSwitch = () => {
         // Переключение метрик в строках/столбцах
@@ -222,6 +242,7 @@ export default function PivotTableC(props) {
                 >
                   <Button block style={{ width: '8em', background: '#fbfbfb', border: '2px solid #c0c0c0' }}>Metrics</Button>
                 </Popover>
+                <Button onClick={handleReload}>Reload</Button>
               </div>
 
               <DimPool
@@ -247,19 +268,23 @@ export default function PivotTableC(props) {
                     colsArr={colsAr} 
                     rowsArr={rowsAr} 
                     isMetricsInCols={isMetricsInCols}
-                    // showSubtotal={showSubtotal}\
-                    showTotal={grandTotalsOn}
+                    subtotalsColsOn={subtotalsColsOn}
+                    subtotalsRowsOn={subtotalsRowsOn}
+                    subtotalsData={subtotalsData}
+                    reload={reload}
                   />
                 </thead>
                 <tbody>
-                  <Rows 
+                  <Rows
+                    reload={reload}
                     rowsArr={rowsAr} 
                     colsArr={colsAr} 
                     data={data} 
                     dims={dims} 
                     isMetricsInCols={isMetricsInCols}
-                    // showSubtotal={showSubtotal}
-                    showTotal={grandTotalsOn}
+                    subtotalsColsOn={subtotalsColsOn}
+                    subtotalsRowsOn={subtotalsRowsOn}
+                    subtotalsData={subtotalsData}
                   />
                 </tbody>
               </table>

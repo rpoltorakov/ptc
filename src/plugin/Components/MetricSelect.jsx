@@ -38,7 +38,7 @@ export const MetricSelect = ({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', gap: '.35em' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '.35em', marginBottom:'0.5em' }}>
       <div>
         <Select
           // defaultValue={aggs[i].label}

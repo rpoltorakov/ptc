@@ -1,10 +1,19 @@
 import React from 'react'
-import { 
+import {
   getDimSpan,
   renderValue
 } from '../utils'
 
-export const ColumnHeaders = ({ colsArr, rowsArr, isMetricsInCols, showTotal }) => {
+export const ColumnHeaders = ({
+  colsArr,
+  rowsArr,
+  isMetricsInCols,
+  showTotal,
+  subtotalsColsOn,
+  subtotalsRowsOn,
+  subtotalsData
+}) => {
+  console.log("🚀 ~ subtotalsColsOn:", subtotalsColsOn)
   const getDimsHier = (colsArr) => {
     let indicators = colsArr
     let result = []
@@ -30,23 +39,23 @@ export const ColumnHeaders = ({ colsArr, rowsArr, isMetricsInCols, showTotal }) 
     return (
       <tr key={el.toString()+i}>
         {rowsArr.map((el, i) => (
-          <th 
-            className='tdv' 
+          <th
+            className='tdv'
             key={el.toString()+i.toString()+'nullCross'}
           />
         ))}
 
         {colsHier.filter(el => el.level === i).map((el, i) => {
           const span = getDimSpan(colsArr, el.level)
-          return <td 
-            key={el+i} 
+          return <td
+            key={el+i}
             className='td header'
             colSpan={span}
           >{renderValue(el.value)}</td>
         })}
 
         {
-          !isMetricsInCols && showTotal &&
+          subtotalsColsOn &&
           <td
             className='tdv tdv-total'
           >

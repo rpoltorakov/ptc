@@ -64,24 +64,24 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'subtotalsOn',
+            name: 'subtotalsRowsOn',
             config: {
               type: 'CheckboxControl',
-              label: 'Enable subtotals',
+              label: 'Enable row subtotals',
               default: false,
               renderTrigger: true,
-              description: 'Enable subtotals',
+              description: 'Enable row subtotals',
             },
           }
         ], [
           {
-            name: 'grandTotalsOn',
+            name: 'subtotalsColsOn',
             config: {
               type: 'CheckboxControl',
-              label: 'Enable grand totals',
+              label: 'Enable column subtotals',
               default: false,
               renderTrigger: true,
-              description: 'Enable grand totals',
+              description: 'Enable column subtotals',
             },
           },
         ]
