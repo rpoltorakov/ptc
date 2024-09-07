@@ -18,8 +18,9 @@ export default function PivotTableC(props) {
   const handleReload = () => {
     setReload(!reload)
   }
+  console.log('-------------------------')
   console.log('props', props)
-  const { height, groupbyColumns, groupbyRows, dimensions } = props;
+  const { height, groupbyColumns, groupbyRows, dimensions, subtotalsOn } = props;
   const { grandTotalsOn, subtotalsColsOn, subtotalsRowsOn } = props.formData
   
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
@@ -65,15 +66,16 @@ export default function PivotTableC(props) {
     }
     delete newFormData.queries
     
-    const newData = await ApiV1.getChartData(buildQuery(newFormData))
-    setData([...newData.result[0].data])
-    
-    // по идее не нужно, т.к. стейты метрик обновляются там где они изменяются, а запрос на данные не меняет метрики
-    // setMetrics([...props.metrics])
+    const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+    // setData([...newData.result[0].data])
+    if (subtotalsOn) {
+      const subtotalsData = await getSubtotals(props.formData, dims, metricsFormData, isMetricsInCols)
+      setData([...newData,])  
+    }
   }
   
   // Функция получения данных сабтоталов
-  async function populateDataWithSubtotalsRows(formData, dims, metricsFormData, isMetricsInCols) {
+  async function getSubtotals(formData, dims, metricsFormData, isMetricsInCols) {
     const subtotalData = []
 
     const cols = dims[1]
@@ -108,8 +110,55 @@ export default function PivotTableC(props) {
       })
       subtotalDataPopulated.push(...populatedData)
     }
-    setData([...data, ...subtotalDataPopulated])
+    return populatedData
+    // setData([...data, ...subtotalDataPopulated])
   }  
+
+  async function getSubtotalDataRows(formData, dims, metricsFormData) {
+    const subtotalData = []
+
+    // для сабтоталов по строкам
+    const cols = dims[1]
+    const rows = getSubtotalsDims(dims[2])
+
+    /*
+      Чтобы получить сабтоталы - нужно сделать такой же запрос на данные,
+      но с другим group by - нужно убрать из разреза те измерения, которые не нужно учитывать
+    */
+    for (let i=0; i < rows.length; i++) {
+      const newFormData = {
+        ...formData,
+        metrics: metricsFormData,
+        groupbyColumns: [],
+        groupbyRows: rows[i]
+      }
+      delete newFormData.queries
+      /*
+        Тут данные, которые нужно показать в сабтоталах
+        Но они без нужных измерений (которые убрали) - функции поиска уникальных значений, а
+        следовательно и построения заголовков - сломаются
+      */
+      const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+      // Тут добавляются убранные измерения со значением total
+      const difference = rows.filter(x => !rows[i].includes(x))
+
+      const populatedData = newData.map((el, i) => {
+        let res = {}
+        // разница в измерениях в строках 
+        difference.forEach((diff) => {
+          res[diff] = 'total'
+        })
+        // в столбцах
+        cols.forEach((col) => {
+          res[col] = 'total'
+        })
+        
+        return {...el, ...res}
+      })
+    }
+
+
+  }
   
   
   async function getSubtotalsDataCols(formData, dims, metricsFormData, isMetricsInCols) {
@@ -141,6 +190,7 @@ export default function PivotTableC(props) {
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
     console.log('data is changed', data)
+    console.log("🚀 ~ subtotalsColsOn:", subtotalsColsOn)
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'total', true))
     console.log("🚀 ~ getUniqueValues cols:", getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'total'))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'total', false))
@@ -148,9 +198,9 @@ export default function PivotTableC(props) {
   }, [dims, data, metricsFormData, isMetricsInCols, reload])
   // на изменение строк - изменить сабототалы (добавить в данные)
   useEffect(() => {
-    if (subtotalsRowsOn) {
-      populateDataWithSubtotalsRows(props.formData, dims, metricsFormData, isMetricsInCols)
-    }
+    // if (subtotalsRowsOn) {
+    //   getSubtotals(props.formData, dims, metricsFormData, isMetricsInCols)
+    // }
   }, [dims, metricsFormData, isMetricsInCols, reload]);
   
   const handleMetricsSwitch = () => {

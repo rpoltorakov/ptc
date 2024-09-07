@@ -2,7 +2,9 @@
   Получение уникальных значений измерений
   из массива данных
 */
-export const getUniqueValues = (data, dims, isMetricsInCols, metrics, subtotalsOn, extra, forCols) => {
+export const getUniqueValues = (
+  data, dims, isMetricsInCols, metrics, subtotalsOn, extra, forCols
+) => {
   console.groupCollapsed('getUniqueValues')
   console.log('getUniqueValues - data', data)
   console.log("🚀 ~ extra:", extra)
@@ -10,22 +12,22 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics, subtotalsO
   let uniqueCols = []
   dims.forEach((dim, i) => {
     const newAr = data.map((item) => {
-      if (!item[dim]) {
+      if (item[dim] === undefined) {
         console.log('!!! found item[dim]:', item[dim])
       }
       return item[dim] === undefined ? 'total' : item[dim]
-    }).sort((a, b) => {
+    }).sort((a, b) => { // сортировка чтоб total всегда был последним
       if (b === 'total') {return -1}
     })
     // console.log("🚀 ~ newAr:", newAr)
-    const unique = [...new Set(newAr)]
+    const unique = [...new Set(newAr)] // удаление дубликатов
     console.log("🚀🚀 ~ unique:", unique)
   
     // не должны до сюда доходить
     // if (unique.length === 1 && unique[0] === undefined) {
     //   return 
     // }
-      if (unique.length === 1 && unique[0] !== undefined) {
+    if (unique.length === 1 && unique[0] !== undefined) {
       uniqueCols.push(unique ? [unique] : ['null']) // если столбец один - нужно положить его как unique=[[values]], иначе будет unique=[values]
       return 
     }

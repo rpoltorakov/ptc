@@ -31,23 +31,23 @@ export const Rows = ({
 
     let result = cartesian(...a)
     
-    if (subtotalsRowsOn) {
-      result = result.map((el, i) => {
-        const ind = findSubArray(el, ['total', 'total'])
-        if (ind === -1) {
-          return el
-        } else {
-          let i = ind
-          let elem = el
-          // console.log('gouing down', el, el[i])
-          while (i < elem.length) {
-            elem[i] = ''
-            i++
-          }
-          return elem
-        }
-      })
-    }
+    // if (subtotalsRowsOn) {
+    //   result = result.map((el, i) => {
+    //     const ind = findSubArray(el, ['total', 'total'])
+    //     if (ind === -1) {
+    //       return el
+    //     } else {
+    //       let i = ind
+    //       let elem = el
+    //       // console.log('gouing down', el, el[i])
+    //       while (i < elem.length) {
+    //         elem[i] = null
+    //         i++
+    //       }
+    //       return elem
+    //     }
+    //   })
+    // }
     
     return result
   }
@@ -142,6 +142,9 @@ export const Rows = ({
   const colsMatrix = cartesian(...colsArr)
   console.log("🚀 ~ colsArr:", colsArr)
   console.log("🚀 ~ colsMatrix:", colsMatrix)
+  console.groupCollapsed('rowsMatrix')
+  console.table(rowsMatrix)
+  console.groupEnd()
   // let subtotal = 0
   const result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
   const dataRow = result.map((row, i) => {

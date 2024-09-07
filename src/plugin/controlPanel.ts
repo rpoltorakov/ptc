@@ -84,6 +84,17 @@ const config: ControlPanelConfig = {
               description: 'Enable column subtotals',
             },
           },
+        ], [
+          {
+            name: 'subtotalsOn',
+            config: {
+              type: 'CheckboxControl',
+              label: 'Enable subtotals',
+              default: false,
+              renderTrigger: true,
+              description: 'Enable subtotals',
+            },
+          },
         ]
       ]
     },
