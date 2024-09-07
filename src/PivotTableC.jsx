@@ -18,7 +18,6 @@ export default function PivotTableC(props) {
   const handleReload = () => {
     setReload(!reload)
   }
-  console.groupCollapsed('root')
   console.log('props', props)
   const { height, groupbyColumns, groupbyRows, dimensions } = props;
   const { grandTotalsOn, subtotalsColsOn, subtotalsRowsOn } = props.formData
@@ -32,11 +31,12 @@ export default function PivotTableC(props) {
   const [data, setData] = React.useState([...props.data])
   const [subtotalsData, setSubtotalsData] = React.useState([])
 
-  const [colsAr, setColsAr] = React.useState(getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics))
-  console.log("🚀 ~ colsAr:", colsAr)
-  const [rowsAr, setRowsAr] = React.useState(getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics, subtotalsRowsOn, 'total'))
-  console.log("🚀 ~ rowsAr:", rowsAr)
-  console.groupEnd()
+  const [colsAr, setColsAr] = React.useState(
+    getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics, subtotalsColsOn, 'total', true)
+  )
+  const [rowsAr, setRowsAr] = React.useState(
+    getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics, subtotalsRowsOn, 'total', false)
+  )
   const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
   
   // изменение agg + field метрик
@@ -72,36 +72,45 @@ export default function PivotTableC(props) {
     // setMetrics([...props.metrics])
   }
   
-  useEffect(() => {
-    console.log('------ Subtotals Changed!')
-    console.log('subtotalsData',subtotalsData)
-  }, [subtotalsData]);
-  
   // Функция получения данных сабтоталов
-  async function getSubtotalsDataRows(formData, dims, metricsFormData, isMetricsInCols) {
+  async function populateDataWithSubtotalsRows(formData, dims, metricsFormData, isMetricsInCols) {
     const subtotalData = []
-    const subtotalDataa = []
-    const cols = [] 
+
+    const cols = dims[1]
     const rows = getSubtotalsDims(dims[2])
+    const subtotalDataPopulated = []
     
     for (let i=0; i < rows.length; i++) {
       const newFormData = {
         ...formData,
         metrics: metricsFormData,
-        groupbyColumns: cols,
+        groupbyColumns: [],
         groupbyRows: rows[i]
       }
       delete newFormData.queries
-      const dataa = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
-      subtotalData.push({
-        data: dataa.map(el => i === 0 ? el : {...el, [rows[i][rows[i].length]]: 'total'}),
-        dims: rows[i],
+      const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+      let difference = dims[2].filter(x => !rows[i].includes(x)); // разница между двумя массивами
+
+      // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'total'
+      const populatedData = newData.map((el, i) => {
+        let res = {}
+        difference.forEach((diff) => {
+          res[diff] = 'total'
+        })
+        // если включены столбцы - еще добавляются столбцы
+        if (subtotalsColsOn) {
+          cols.forEach((col) => {
+            res[col] = 'total'
+          })
+        }
+        
+        return {...el, ...res}
       })
-      subtotalDataa.push(...dataa)
+      subtotalDataPopulated.push(...populatedData)
     }
-    setSubtotalsData([...subtotalData])
-    // setData([...data, ...subtotalDataa])
+    setData([...data, ...subtotalDataPopulated])
   }  
+  
   
   async function getSubtotalsDataCols(formData, dims, metricsFormData, isMetricsInCols) {
     const subtotalData = []
@@ -125,174 +134,178 @@ export default function PivotTableC(props) {
     setSubtotalsData([...subtotalData])
   }
     
-      // на изменение колонок/строк - запрос на апи
-      useEffect(() => {
-        getNewData(props.formData, dims, metricsFormData)
-      }, [dims, metricsFormData, reload])
-      useEffect(() => {
-        console.log('data is changed', data)
-        setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics))
-        setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'total'))
-      }, [dims, data, metricsFormData, isMetricsInCols, reload])
-      useEffect(() => {
-        if (subtotalsRowsOn) {
-          getSubtotalsDataRows(props.formData, dims, metricsFormData, isMetricsInCols)
-        }
-      }, [dims, metricsFormData, isMetricsInCols, reload]);
+  // на изменение колонок/строк - запрос на апи
+  useEffect(() => {
+    getNewData(props.formData, dims, metricsFormData)
+  }, [dims, metricsFormData, reload])
+  // на изменение данных - изменить колонки/строки
+  useEffect(() => {
+    console.log('data is changed', data)
+    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'total', true))
+    console.log("🚀 ~ getUniqueValues cols:", getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'total'))
+    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'total', false))
+    console.log("🚀 ~ getUniqueValues rows:", getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'total'))
+  }, [dims, data, metricsFormData, isMetricsInCols, reload])
+  // на изменение строк - изменить сабототалы (добавить в данные)
+  useEffect(() => {
+    if (subtotalsRowsOn) {
+      populateDataWithSubtotalsRows(props.formData, dims, metricsFormData, isMetricsInCols)
+    }
+  }, [dims, metricsFormData, isMetricsInCols, reload]);
+  
+  const handleMetricsSwitch = () => {
+    // Переключение метрик в строках/столбцах
+    setIsMetricsInCols(!isMetricsInCols)
+  }
+  const handleDeleteMetric = (index) => {
+    // Удаление метрики - удаляет только из формы, в массивах аггрегаций и полей - нужно оставить
+    setMetricsFormData([...metricsFormData.filter((el, i) => i !== index)])
+    setMetrics([...metrics.filter((el, i) => i !== index)])
+  }
+  const handleAddMetric = () => {
+    // При нажатии на "+" - добавить копию последней метрики
+    setMetricsFormData([...metricsFormData, metricsFormData[metricsFormData.length-1]])
+    setMetrics([...metrics, metrics[metrics.length-1]])
+  }
       
-      const handleMetricsSwitch = () => {
-        // Переключение метрик в строках/столбцах
-        setIsMetricsInCols(!isMetricsInCols)
-      }
-      const handleDeleteMetric = (index) => {
-        // Удаление метрики - удаляет только из формы, в массивах аггрегаций и полей - нужно оставить
-        setMetricsFormData([...metricsFormData.filter((el, i) => i !== index)])
-        setMetrics([...metrics.filter((el, i) => i !== index)])
-      }
-      const handleAddMetric = () => {
-        // При нажатии на "+" - добавить копию последней метрики
-        setMetricsFormData([...metricsFormData, metricsFormData[metricsFormData.length-1]])
-        setMetrics([...metrics, metrics[metrics.length-1]])
-      }
+    
+  // колбэк для драг'н'дропа
+  const handleDragEnd = (result) => {
+    const reorder = (list, startIndex, endIndex) => {
+      const result = Array.from(list);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+      return result;
+    };
+    
+    const move = (source, destination, droppableSource, droppableDestination) => {
+      const sourceClone = Array.from(source);
+      const destClone = Array.from(destination);
+      const [removed] = sourceClone.splice(droppableSource.index, 1);
       
+      destClone.splice(droppableDestination.index, 0, removed);
       
-      // колбэк для драг'н'дропа
-      const handleDragEnd = (result) => {
-        const reorder = (list, startIndex, endIndex) => {
-          const result = Array.from(list);
-          const [removed] = result.splice(startIndex, 1);
-          result.splice(endIndex, 0, removed);
-          return result;
-        };
-        
-        const move = (source, destination, droppableSource, droppableDestination) => {
-          const sourceClone = Array.from(source);
-          const destClone = Array.from(destination);
-          const [removed] = sourceClone.splice(droppableSource.index, 1);
-          
-          destClone.splice(droppableDestination.index, 0, removed);
-          
-          const result = {};
-          result[droppableSource.droppableId] = sourceClone;
-          result[droppableDestination.droppableId] = destClone;
-          
-          return result;
-        };
-        
-        const { source, destination } = result;
-        if (!destination) {
-          return;
-        }
-        
-        const sInd = +source.droppableId;
-        const dInd = +destination.droppableId;
-        
-        if (sInd === dInd) {
-          const items = reorder(dims[sInd], source.index, destination.index);
-          const newState = [...dims];
-          newState[sInd] = items;
-          setDims(newState);
-        } else {
-          const result = move(dims[sInd], dims[dInd], source, destination);
-          const newState = [...dims];
-          newState[sInd] = result[sInd];
-          newState[dInd] = result[dInd];
-          setDims(newState);
-        }
-      }
+      const result = {};
+      result[droppableSource.droppableId] = sourceClone;
+      result[droppableDestination.droppableId] = destClone;
       
-      const rootElem = createRef();
-      return (
-        <Styles
-        ref={rootElem}
-        boldText={props.boldText}
-        headerFontSize={props.headerFontSize}
-        height={height}
-        >
-      <div className='ptc-wrapper'>
-        <DragDropContext onDragEnd={handleDragEnd}>
-        <div className='app-ptc'>
-          <DimPool 
-            id={'0'}
-            items={dims[0]}
-            vertical={false}
-            classes={'dim-pool-big'}
-            direction="horizontal"
-            metricsAr={metrics}
+      return result;
+    };
+    
+    const { source, destination } = result;
+    if (!destination) {
+      return;
+    }
+    
+    const sInd = +source.droppableId;
+    const dInd = +destination.droppableId;
+    
+    if (sInd === dInd) {
+      const items = reorder(dims[sInd], source.index, destination.index);
+      const newState = [...dims];
+      newState[sInd] = items;
+      setDims(newState);
+    } else {
+      const result = move(dims[sInd], dims[dInd], source, destination);
+      const newState = [...dims];
+      newState[sInd] = result[sInd];
+      newState[dInd] = result[dInd];
+      setDims(newState);
+    }
+  }
+  
+  const rootElem = createRef();
+  return (
+      <Styles
+      ref={rootElem}
+      boldText={props.boldText}
+      headerFontSize={props.headerFontSize}
+      height={height}
+      >
+    <div className='ptc-wrapper'>
+      <DragDropContext onDragEnd={handleDragEnd}>
+      <div className='app-ptc'>
+        <DimPool 
+          id={'0'}
+          items={dims[0]}
+          vertical={false}
+          classes={'dim-pool-big'}
+          direction="horizontal"
+          metricsAr={metrics}
+          />
+        <div className='wrapper'>
+          <div className='colss'>
+            <div style={{ display: 'flex', position: 'relative', flexDirection:'column' }}>
+              
+              <Popover
+                content={<Metrics 
+                  isOpened={isMetricsOpened}
+                  metrics={metrics} 
+                  checked={isMetricsInCols}
+                  handleChange={handleMetricsSwitch}
+                  handleDelete={handleDeleteMetric}
+                  metricsAggs={metricsAggs}
+                  metricsFields={metricsFields}
+                  metricsFormData={metricsFormData}
+                  handleMetricsChange={handleMetricsChange}
+                  handleAddMetric={handleAddMetric}
+                />}
+                trigger='click'
+                placement="bottomLeft"
+              >
+                <Button block style={{ width: '8em', background: '#fbfbfb', border: '2px solid #c0c0c0' }}>Metrics</Button>
+              </Popover>
+              <Button onClick={handleReload}>Reload</Button>
+            </div>
+
+            <DimPool
+              id={'1'}
+              items={dims[1]}
+              vertical={false}
+              direction="horizontal"
+              metricsAr={metrics}
             />
-          <div className='wrapper'>
-            <div className='colss'>
-              <div style={{ display: 'flex', position: 'relative', flexDirection:'column' }}>
-                
-                <Popover
-                  content={<Metrics 
-                    isOpened={isMetricsOpened}
-                    metrics={metrics} 
-                    checked={isMetricsInCols}
-                    handleChange={handleMetricsSwitch}
-                    handleDelete={handleDeleteMetric}
-                    metricsAggs={metricsAggs}
-                    metricsFields={metricsFields}
-                    metricsFormData={metricsFormData}
-                    handleMetricsChange={handleMetricsChange}
-                    handleAddMetric={handleAddMetric}
-                  />}
-                  trigger='click'
-                  placement="bottomLeft"
-                >
-                  <Button block style={{ width: '8em', background: '#fbfbfb', border: '2px solid #c0c0c0' }}>Metrics</Button>
-                </Popover>
-                <Button onClick={handleReload}>Reload</Button>
-              </div>
-
-              <DimPool
-                id={'1'}
-                items={dims[1]}
-                vertical={false}
-                direction="horizontal"
-                metricsAr={metrics}
-              />
-            </div>
-
-            <div className='tableWrapper' style={{maxWidth: '100%'}}>
-              <DimPool
-                id={'2'}
-                items={dims[2]}
-                vertical={true}
-                metricsAr={metrics}
-              />
-
-              <table id='t' className='table table-pvc'>
-                <thead>
-                  <ColumnHeaders 
-                    colsArr={colsAr} 
-                    rowsArr={rowsAr} 
-                    isMetricsInCols={isMetricsInCols}
-                    subtotalsColsOn={subtotalsColsOn}
-                    subtotalsRowsOn={subtotalsRowsOn}
-                    subtotalsData={subtotalsData}
-                    reload={reload}
-                  />
-                </thead>
-                <tbody>
-                  <Rows
-                    reload={reload}
-                    rowsArr={rowsAr} 
-                    colsArr={colsAr} 
-                    data={data} 
-                    dims={dims} 
-                    isMetricsInCols={isMetricsInCols}
-                    subtotalsColsOn={subtotalsColsOn}
-                    subtotalsRowsOn={subtotalsRowsOn}
-                    subtotalsData={subtotalsData}
-                  />
-                </tbody>
-              </table>
-            </div>
           </div>
-      </div>
-      </DragDropContext>
-      </div>
+
+          <div className='tableWrapper' style={{maxWidth: '100%'}}>
+            <DimPool
+              id={'2'}
+              items={dims[2]}
+              vertical={true}
+              metricsAr={metrics}
+            />
+
+            <table id='t' className='table table-pvc'>
+              <thead>
+                <ColumnHeaders 
+                  colsArr={colsAr} 
+                  rowsArr={rowsAr} 
+                  isMetricsInCols={isMetricsInCols}
+                  subtotalsColsOn={subtotalsColsOn}
+                  subtotalsRowsOn={subtotalsRowsOn}
+                  subtotalsData={subtotalsData}
+                  reload={reload}
+                />
+              </thead>
+              <tbody>
+                <Rows
+                  reload={reload}
+                  rowsArr={rowsAr} 
+                  colsArr={colsAr} 
+                  data={data} 
+                  dims={dims} 
+                  isMetricsInCols={isMetricsInCols}
+                  subtotalsColsOn={subtotalsColsOn}
+                  subtotalsRowsOn={subtotalsRowsOn}
+                  subtotalsData={subtotalsData}
+                />
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+    </DragDropContext>
+    </div>
 
     </Styles>
 

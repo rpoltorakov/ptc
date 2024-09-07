@@ -58,7 +58,7 @@ const config: ControlPanelConfig = {
       
     },
     {
-      label: 'Filter',
+      label: 'Subtotals',
       expanded: true,
       tabOverride: 'data',
       controlSetRows: [

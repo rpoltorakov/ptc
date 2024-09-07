@@ -30,14 +30,25 @@ export const Rows = ({
     }
 
     let result = cartesian(...a)
-    console.log("🚀 ~ result:", result)
     
     if (subtotalsRowsOn) {
-      result = result.filter((el, i) => findSubArray(el, ['total', 'total']) === -1)
-      console.log("🚀 ~ result:", result)
+      result = result.map((el, i) => {
+        const ind = findSubArray(el, ['total', 'total'])
+        if (ind === -1) {
+          return el
+        } else {
+          let i = ind
+          let elem = el
+          // console.log('gouing down', el, el[i])
+          while (i < elem.length) {
+            elem[i] = ''
+            i++
+          }
+          return elem
+        }
+      })
     }
     
-    console.log("🚀 ~ result in createMatrix:", result)
     return result
   }
 
@@ -66,6 +77,11 @@ export const Rows = ({
 
   // поиск метрик
   const findDataCell = (data, colDims, rowDims, isMetricsInCols, dims) => {
+    // if (rowDims.includes('total') || colDims.includes('total')) {
+    //   console.groupCollapsed('findDataCell')
+    //   console.log("🚀 ~ rowDims:", rowDims)
+    //   console.log("🚀 ~ colDims:", colDims)
+    // }
     const colsParsed = isMetricsInCols ? colDims.slice(0, -1) : colDims
     // console.log("🚀 ~ colsParsed:", colsParsed)
     const dimNames = [...dims[1], ...dims[2]]
@@ -74,6 +90,11 @@ export const Rows = ({
       const dims = [...colsParsed, ...rowDims]
       let target = {}
       dimNames.forEach((key, i) => target[key] = dims[i])
+      if (i === 0) {
+        // if (rowDims.includes('total') || colDims.includes('total')) {
+        //   console.log("🚀 ~ target:", target)
+        // }
+      }
       for (const key in target) {
         if (el[key] !== target[key]) {
           return false;
@@ -81,6 +102,9 @@ export const Rows = ({
       }
       return true
     })
+    // if (rowDims.includes('total') || colDims.includes('total')) {
+    //   console.log("🚀 ~ value:", value)
+    // }
 
     // поиск нужной метрики
     let metric = ''
@@ -89,7 +113,9 @@ export const Rows = ({
     } else {
       metric = rowDims[rowDims.length-1]
     }
-
+    // if (rowDims.includes('total') || colDims.includes('total')) {
+    //   console.groupEnd()
+    // }
     return value ? value[metric] : null
   }
 
@@ -124,6 +150,7 @@ export const Rows = ({
       return value
     })
   })
+  console.log("🚀 ~ dataRow:", dataRow)
 
   console.groupEnd()
   return (
@@ -157,32 +184,8 @@ export const Rows = ({
           }
 
 
-          { // подитоги в строках
-            !isMetricsInCols && showTotal &&
-            <td
-              className=' tdv tdv-total'
-            >{getRowSubtotal(dataRow[i], 'SUM')}</td>
-          }
-
-
         </tr>
       ))}
-
-      { // подитоги в колонках
-        isMetricsInCols && showTotal &&
-        <tr>
-          <td
-            className='tdv tdv-total'
-            colSpan={rowsMatrix[rowsMatrix.length-1].length}
-          >Total</td>
-          {getColumnSubtotal(colsMatrix, dataRow, 'SUM').map(el => (
-            <td
-              className='tdv tdv-total'
-              // key={'totalCol' + i.toString()}
-            >{el}</td>
-          ))}
-        </tr>
-      }
     </>
   )
 }

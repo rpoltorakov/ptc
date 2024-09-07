@@ -29,151 +29,50 @@ SyntaxError: /opt/superset_roma/ptc/src/plugin/pivotTable.ts: Unexpected token, 
   code: 'BABEL_PARSE_ERROR',
   reasonCode: 'UnexpectedToken'
 }
-Successfully compiled 19 files with Babel (4572ms).
-Successfully compiled 1 file with Babel (216ms).
-Successfully compiled 1 file with Babel (140ms).
-Successfully compiled 1 file with Babel (161ms).
-Successfully compiled 1 file with Babel (113ms).
-Successfully compiled 1 file with Babel (125ms).
-Successfully compiled 1 file with Babel (113ms).
-Successfully compiled 1 file with Babel (138ms).
-Successfully compiled 1 file with Babel (283ms).
-Successfully compiled 1 file with Babel (147ms).
-Successfully compiled 1 file with Babel (112ms).
-Successfully compiled 1 file with Babel (162ms).
-Successfully compiled 1 file with Babel (143ms).
-Successfully compiled 1 file with Babel (147ms).
-Successfully compiled 1 file with Babel (166ms).
-Successfully compiled 1 file with Babel (117ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (136ms).
-Successfully compiled 1 file with Babel (141ms).
-Successfully compiled 1 file with Babel (153ms).
-Successfully compiled 1 file with Babel (114ms).
-Successfully compiled 1 file with Babel (123ms).
-Successfully compiled 1 file with Babel (140ms).
-Successfully compiled 1 file with Babel (170ms).
-Successfully compiled 1 file with Babel (222ms).
-Successfully compiled 1 file with Babel (173ms).
-Successfully compiled 1 file with Babel (150ms).
-Successfully compiled 1 file with Babel (150ms).
-Successfully compiled 1 file with Babel (155ms).
-SyntaxError: /opt/superset_roma/ptc/src/plugin/Components/Rows.jsx: Missing semicolon. (16:20)
-
-  14 |   }) => {
-  15 |   // декартово произведение массивов
-> 16 |   const createMatrix(a, subtotalsRowsOn) {
-     |                     ^
-  17 |     const cartesian = (...a) => {
-  18 |       if (a.length === 1) {
-  19 |         return a[0].map(e => [e])
-    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
-    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
-    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
-    at Parser.semicolon (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3571:10)
-    at Parser.parseVarStatement (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:14010:10)
-    at Parser.parseStatementContent (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:13594:21)
-    at Parser.parseStatementContent (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9584:18)
-    at Parser.parseStatement (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:13525:17)
-    at Parser.parseBlockOrModuleBlockBody (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:14114:25)
-    at Parser.parseBlockBody (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:14105:10) {
-  loc: Position { line: 16, column: 20 },
-  pos: 328,
-  code: 'BABEL_PARSE_ERROR',
-  reasonCode: 'MissingSemicolon'
-}
-Successfully compiled 1 file with Babel (107ms).
-SyntaxError: /opt/superset_roma/ptc/src/plugin/Components/Rows.jsx: Missing semicolon. (16:20)
-
-  14 |   }) => {
-  15 |   // декартово произведение массивов
-> 16 |   const createMatrix(a, subtotalsRowsOn) {
-     |                     ^
-  17 |     const cartesian = (...a) => {
-  18 |       if (a.length === 1) {
-  19 |         return a[0].map(e => [e])
-    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
-    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
-    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
-    at Parser.semicolon (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3571:10)
-    at Parser.parseVarStatement (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:14010:10)
-    at Parser.parseStatementContent (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:13594:21)
-    at Parser.parseStatementContent (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9584:18)
-    at Parser.parseStatement (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:13525:17)
-    at Parser.parseBlockOrModuleBlockBody (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:14114:25)
-    at Parser.parseBlockBody (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:14105:10) {
-  loc: Position { line: 16, column: 20 },
-  pos: 328,
-  code: 'BABEL_PARSE_ERROR',
-  reasonCode: 'MissingSemicolon'
-}
-Successfully compiled 1 file with Babel (107ms).
+Successfully compiled 18 files with Babel (4301ms).
+Successfully compiled 1 file with Babel (254ms).
+Successfully compiled 1 file with Babel (168ms).
 Successfully compiled 1 file with Babel (137ms).
-Successfully compiled 1 file with Babel (126ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (113ms).
-Successfully compiled 1 file with Babel (114ms).
-Successfully compiled 1 file with Babel (117ms).
-Successfully compiled 1 file with Babel (114ms).
-Successfully compiled 1 file with Babel (139ms).
-Successfully compiled 1 file with Babel (112ms).
-Successfully compiled 1 file with Babel (245ms).
-Successfully compiled 1 file with Babel (145ms).
-Successfully compiled 1 file with Babel (112ms).
-Successfully compiled 1 file with Babel (115ms).
-Successfully compiled 1 file with Babel (232ms).
-Successfully compiled 1 file with Babel (143ms).
-Successfully compiled 1 file with Babel (117ms).
-Successfully compiled 1 file with Babel (142ms).
-Successfully compiled 1 file with Babel (149ms).
-Successfully compiled 1 file with Babel (142ms).
-Successfully compiled 1 file with Babel (142ms).
-Successfully compiled 1 file with Babel (157ms).
-Successfully compiled 1 file with Babel (129ms).
-Successfully compiled 1 file with Babel (126ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (116ms).
-SyntaxError: /opt/superset_roma/ptc/src/plugin/Components/Rows.jsx: Unexpected token (38:6)
-
-  36 |       result = result.map((el, i) => {
-  37 |         if (findSubArray)
-> 38 |       })
-     |       ^
-  39 |     }
-  40 |
-  41 |     return result
-    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
-    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
-    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
-    at Parser.unexpected (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3601:16)
-    at Parser.parseExprAtom (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12104:22)
-    at Parser.parseExprAtom (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7523:20)
-    at Parser.parseExprSubscripts (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11658:23)
-    at Parser.parseUpdate (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11638:21)
-    at Parser.parseMaybeUnary (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11613:23)
-    at Parser.parseMaybeUnary (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9973:20) {
-  loc: Position { line: 38, column: 6 },
-  pos: 963,
-  code: 'BABEL_PARSE_ERROR',
-  reasonCode: 'UnexpectedToken'
-}
-Successfully compiled 2 files with Babel (118ms).
-Successfully compiled 1 file with Babel (130ms).
-Successfully compiled 1 file with Babel (132ms).
-Successfully compiled 1 file with Babel (133ms).
-Successfully compiled 1 file with Babel (133ms).
-Successfully compiled 1 file with Babel (125ms).
-Successfully compiled 1 file with Babel (131ms).
-Successfully compiled 1 file with Babel (159ms).
-Successfully compiled 1 file with Babel (245ms).
-Successfully compiled 1 file with Babel (177ms).
-Successfully compiled 1 file with Babel (150ms).
-Successfully compiled 1 file with Babel (153ms).
-Successfully compiled 1 file with Babel (165ms).
-Successfully compiled 1 file with Babel (130ms).
-Successfully compiled 1 file with Babel (130ms).
-Successfully compiled 1 file with Babel (124ms).
+Successfully compiled 1 file with Babel (136ms).
+Successfully compiled 1 file with Babel (134ms).
+Successfully compiled 1 file with Babel (168ms).
+Successfully compiled 1 file with Babel (151ms).
 Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (117ms).
+Successfully compiled 1 file with Babel (116ms).
+Successfully compiled 1 file with Babel (138ms).
+Successfully compiled 1 file with Babel (133ms).
+Successfully compiled 1 file with Babel (142ms).
+Successfully compiled 1 file with Babel (126ms).
+Successfully compiled 1 file with Babel (126ms).
+Successfully compiled 1 file with Babel (132ms).
+Successfully compiled 1 file with Babel (125ms).
 Successfully compiled 1 file with Babel (149ms).
-Successfully compiled 1 file with Babel (124ms).
+Successfully compiled 1 file with Babel (157ms).
+Successfully compiled 1 file with Babel (149ms).
+Successfully compiled 1 file with Babel (110ms).
+Successfully compiled 1 file with Babel (144ms).
+Successfully compiled 1 file with Babel (135ms).
+Successfully compiled 1 file with Babel (153ms).
+Successfully compiled 1 file with Babel (119ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (115ms).
+Successfully compiled 1 file with Babel (119ms).
+Successfully compiled 1 file with Babel (126ms).
+Successfully compiled 1 file with Babel (152ms).
+Successfully compiled 1 file with Babel (115ms).
+Successfully compiled 1 file with Babel (144ms).
+Successfully compiled 1 file with Babel (151ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (193ms).
+Successfully compiled 1 file with Babel (171ms).
+Successfully compiled 1 file with Babel (129ms).
+Successfully compiled 1 file with Babel (136ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (121ms).
 Successfully compiled 1 file with Babel (123ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (116ms).
+Successfully compiled 1 file with Babel (126ms).
+Successfully compiled 1 file with Babel (115ms).

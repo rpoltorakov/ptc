@@ -2,19 +2,30 @@
   Получение уникальных значений измерений
   из массива данных
 */
-export const getUniqueValues = (data, dims, isMetricsInCols, metrics, subtotalsOn, extra) => {
+export const getUniqueValues = (data, dims, isMetricsInCols, metrics, subtotalsOn, extra, forCols) => {
   console.groupCollapsed('getUniqueValues')
+  console.log('getUniqueValues - data', data)
   console.log("🚀 ~ extra:", extra)
   
   let uniqueCols = []
   dims.forEach((dim, i) => {
-    const unique = [...new Set(data.map((item) => {
-      return item[dim]
-    }))]
-    console.log("🚀 ~ unique:", unique)
+    const newAr = data.map((item) => {
+      if (!item[dim]) {
+        console.log('!!! found item[dim]:', item[dim])
+      }
+      return item[dim] === undefined ? 'total' : item[dim]
+    }).sort((a, b) => {
+      if (b === 'total') {return -1}
+    })
+    // console.log("🚀 ~ newAr:", newAr)
+    const unique = [...new Set(newAr)]
+    console.log("🚀🚀 ~ unique:", unique)
   
-    if (unique.length === 1 && unique[0] === undefined) return // не должны до сюда доходить
-    if (unique.length === 1 && unique[0] !== undefined) {
+    // не должны до сюда доходить
+    // if (unique.length === 1 && unique[0] === undefined) {
+    //   return 
+    // }
+      if (unique.length === 1 && unique[0] !== undefined) {
       uniqueCols.push(unique ? [unique] : ['null']) // если столбец один - нужно положить его как unique=[[values]], иначе будет unique=[values]
       return 
     }
@@ -23,14 +34,23 @@ export const getUniqueValues = (data, dims, isMetricsInCols, metrics, subtotalsO
   
   console.log("🚀 ~ subtotalsColsOn:", subtotalsOn)
   console.log("🚀 ~ extra:", extra)
-  if (subtotalsOn && extra) {
-    uniqueCols.forEach((el, i) => {
-      if (i !== 0) {
-        el.push(extra)
-      }
-    })
-    // uniqueCols[uniqueCols.length-1].push(extra)
-  }
+  // для строк
+  // if (!forCols && subtotalsOn && extra) {
+  //   uniqueCols.forEach((el, i) => {
+  //     if (i !== 0) {
+  //       el.push(extra)
+  //     }
+  //   })
+  //   // uniqueCols[uniqueCols.length-1].push(extra)
+  // }
+
+  // для строк
+  // if (forCols && subtotalsOn && extra) {
+  // // if (!isMetricsInCols && subtotalsOn && extra) {
+  //   uniqueCols.forEach((el, i) => {
+  //     el.push(extra)
+  //   })
+  // }
   // console.log("🚀 ~ uniqueCols:", uniqueCols)
     // Обработка выбора расположения метрик
     // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols

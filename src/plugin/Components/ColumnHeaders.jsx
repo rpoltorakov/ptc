@@ -13,7 +13,6 @@ export const ColumnHeaders = ({
   subtotalsRowsOn,
   subtotalsData
 }) => {
-  console.log("🚀 ~ subtotalsColsOn:", subtotalsColsOn)
   const getDimsHier = (colsArr) => {
     let indicators = colsArr
     let result = []
@@ -54,14 +53,14 @@ export const ColumnHeaders = ({
           >{renderValue(el.value)}</td>
         })}
 
-        {
+        {/* {
           subtotalsColsOn &&
           <td
             className='tdv tdv-total'
           >
             Total
           </td>
-        }
+        } */}
       </tr>
     )
   })
