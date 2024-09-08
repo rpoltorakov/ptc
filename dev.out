@@ -5,88 +5,93 @@
 Browserslist: caniuse-lite is outdated. Please run:
   npx browserslist@latest --update-db
   Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
-SyntaxError: /opt/superset_roma/ptc/src/plugin/pivotTable.ts: Unexpected token, expected "," (17:9)
+Successfully compiled 18 files with Babel (2070ms).
+Successfully compiled 1 file with Babel (199ms).
+Successfully compiled 1 file with Babel (147ms).
+Successfully compiled 1 file with Babel (141ms).
+Successfully compiled 1 file with Babel (134ms).
+Successfully compiled 1 file with Babel (126ms).
+Successfully compiled 1 file with Babel (129ms).
+SyntaxError: /opt/superset_roma/ptc/src/plugin/Components/Rows.jsx: Expected corresponding JSX closing tag for <>. (210:20)
 
-  15 |   )
-  16 |   return (
-> 17 |     <div ref={dragRef} style={{ opacity }}>
-     |          ^
-  18 |       {text}
-  19 |     </div>
-  20 |   )
+  208 |                     >
+  209 |                       {/* тут число */}
+> 210 |                     </td> : (el === '') ? null : '\u00A0'
+      |                     ^
+  211 |                   )
+  212 |                 } else {
+  213 |                   if (el === rowsMatrix[i-1][j]) {
     at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
     at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
     at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
-    at Parser.unexpected (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3601:16)
-    at Parser.expect (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3575:28)
-    at Parser.tsParseDelimitedListWorker (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7929:14)
-    at Parser.tsParseDelimitedList (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7898:25)
-    at Parser.tsParseBracketedList (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7951:25)
-    at Parser.tsParseTypeParameters (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:8063:24)
-    at /opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9913:29 {
-  loc: Position { line: 17, column: 9 },
-  pos: 341,
+    at Parser.jsxParseElementAt (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7473:14)
+    at Parser.jsxParseElement (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7504:17)
+    at Parser.parseExprAtom (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7518:19)
+    at Parser.parseExprSubscripts (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11658:23)
+    at Parser.parseUpdate (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11638:21)
+    at Parser.parseMaybeUnary (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11613:23)
+    at Parser.parseMaybeUnary (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9973:20) {
+  loc: Position { line: 210, column: 20 },
+  pos: 6331,
   code: 'BABEL_PARSE_ERROR',
-  reasonCode: 'UnexpectedToken'
+  reasonCode: 'MissingClosingTagFragment'
 }
-Successfully compiled 18 files with Babel (4301ms).
-Successfully compiled 1 file with Babel (254ms).
-Successfully compiled 1 file with Babel (168ms).
-Successfully compiled 1 file with Babel (137ms).
-Successfully compiled 1 file with Babel (136ms).
-Successfully compiled 1 file with Babel (134ms).
-Successfully compiled 1 file with Babel (168ms).
-Successfully compiled 1 file with Babel (151ms).
-Successfully compiled 1 file with Babel (118ms).
-Successfully compiled 1 file with Babel (118ms).
-Successfully compiled 1 file with Babel (117ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (138ms).
-Successfully compiled 1 file with Babel (133ms).
-Successfully compiled 1 file with Babel (142ms).
-Successfully compiled 1 file with Babel (126ms).
-Successfully compiled 1 file with Babel (126ms).
-Successfully compiled 1 file with Babel (132ms).
-Successfully compiled 1 file with Babel (125ms).
-Successfully compiled 1 file with Babel (149ms).
-Successfully compiled 1 file with Babel (157ms).
-Successfully compiled 1 file with Babel (149ms).
-Successfully compiled 1 file with Babel (110ms).
-Successfully compiled 1 file with Babel (144ms).
-Successfully compiled 1 file with Babel (135ms).
-Successfully compiled 1 file with Babel (153ms).
-Successfully compiled 1 file with Babel (119ms).
-Successfully compiled 1 file with Babel (125ms).
-Successfully compiled 1 file with Babel (115ms).
-Successfully compiled 1 file with Babel (119ms).
-Successfully compiled 1 file with Babel (126ms).
-Successfully compiled 1 file with Babel (152ms).
-Successfully compiled 1 file with Babel (115ms).
-Successfully compiled 1 file with Babel (144ms).
-Successfully compiled 1 file with Babel (151ms).
-Successfully compiled 1 file with Babel (125ms).
-Successfully compiled 1 file with Babel (193ms).
-Successfully compiled 1 file with Babel (171ms).
-Successfully compiled 1 file with Babel (129ms).
-Successfully compiled 1 file with Babel (136ms).
-Successfully compiled 1 file with Babel (118ms).
-Successfully compiled 1 file with Babel (121ms).
-Successfully compiled 1 file with Babel (123ms).
-Successfully compiled 1 file with Babel (118ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (126ms).
-Successfully compiled 1 file with Babel (115ms).
-Successfully compiled 1 file with Babel (114ms).
-Successfully compiled 1 file with Babel (118ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (128ms).
-Successfully compiled 1 file with Babel (134ms).
-Successfully compiled 1 file with Babel (125ms).
-Successfully compiled 1 file with Babel (129ms).
-Successfully compiled 1 file with Babel (149ms).
 Successfully compiled 1 file with Babel (112ms).
-Successfully compiled 1 file with Babel (114ms).
-Successfully compiled 1 file with Babel (119ms).
-Successfully compiled 1 file with Babel (225ms).
-Successfully compiled 1 file with Babel (116ms).
-Successfully compiled 1 file with Babel (176ms).
+SyntaxError: /opt/superset_roma/ptc/src/plugin/Components/Rows.jsx: Expected corresponding JSX closing tag for <>. (210:20)
+
+  208 |                     >
+  209 |                       {/* тут число */}
+> 210 |                     </td> : (el === '') ? null : '\u00A0'
+      |                     ^
+  211 |                   )
+  212 |                 } else {
+  213 |                   if (el === rowsMatrix[i-1][j]) {
+    at Parser._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
+    at Parser.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
+    at Parser.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
+    at Parser.jsxParseElementAt (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7473:14)
+    at Parser.jsxParseElement (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7504:17)
+    at Parser.parseExprAtom (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:7518:19)
+    at Parser.parseExprSubscripts (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11658:23)
+    at Parser.parseUpdate (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11638:21)
+    at Parser.parseMaybeUnary (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11613:23)
+    at Parser.parseMaybeUnary (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9973:20) {
+  loc: Position { line: 210, column: 20 },
+  pos: 6364,
+  code: 'BABEL_PARSE_ERROR',
+  reasonCode: 'MissingClosingTagFragment'
+}
+Successfully compiled 1 file with Babel (108ms).
+Successfully compiled 1 file with Babel (127ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (146ms).
+Successfully compiled 1 file with Babel (175ms).
+Successfully compiled 1 file with Babel (179ms).
+Successfully compiled 1 file with Babel (188ms).
+Successfully compiled 1 file with Babel (166ms).
+Successfully compiled 1 file with Babel (127ms).
+Successfully compiled 1 file with Babel (164ms).
+Successfully compiled 1 file with Babel (155ms).
+Successfully compiled 1 file with Babel (154ms).
+Successfully compiled 1 file with Babel (278ms).
+Successfully compiled 1 file with Babel (162ms).
+Successfully compiled 1 file with Babel (121ms).
+Successfully compiled 1 file with Babel (169ms).
+Successfully compiled 1 file with Babel (162ms).
+Successfully compiled 1 file with Babel (159ms).
+Successfully compiled 1 file with Babel (157ms).
+Successfully compiled 1 file with Babel (159ms).
+Successfully compiled 1 file with Babel (170ms).
+Successfully compiled 1 file with Babel (190ms).
+Successfully compiled 1 file with Babel (149ms).
+Successfully compiled 1 file with Babel (151ms).
+Successfully compiled 1 file with Babel (156ms).
+Successfully compiled 1 file with Babel (164ms).
+Successfully compiled 1 file with Babel (112ms).
+Successfully compiled 1 file with Babel (127ms).
+Successfully compiled 1 file with Babel (123ms).
+Successfully compiled 1 file with Babel (110ms).
+Successfully compiled 1 file with Babel (104ms).
+Successfully compiled 1 file with Babel (124ms).
+Successfully compiled 1 file with Babel (128ms).
+Successfully compiled 1 file with Babel (122ms).

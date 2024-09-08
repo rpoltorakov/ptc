@@ -8,10 +8,6 @@ export const SubtotalsMenu = ({  }) => {
         <div className="subtotals-label">
           Show subtotals
         </div>
-        {/* <Switch
-          checked={checked}
-          onChange={handleChange} 
-        /> */}
       </div>
     </div>
   )

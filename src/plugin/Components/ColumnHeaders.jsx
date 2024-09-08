@@ -52,15 +52,6 @@ export const ColumnHeaders = ({
             colSpan={span}
           >{renderValue(el.value)}</td>
         })}
-
-        {/* {
-          subtotalsColsOn &&
-          <td
-            className='tdv tdv-total'
-          >
-            Total
-          </td>
-        } */}
       </tr>
     )
   })

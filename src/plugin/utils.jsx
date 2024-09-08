@@ -4,67 +4,30 @@
 */
 export const getUniqueValues = (
   data, dims, isMetricsInCols, metrics, subtotalsOn, extra, forCols
-) => {
-  console.groupCollapsed('getUniqueValues')
-  console.log('getUniqueValues - data', data)
-  console.log("🚀 ~ extra:", extra)
-  
+) => {  
   let uniqueCols = []
   dims.forEach((dim, i) => {
     const newAr = data.map((item) => {
       if (item[dim] === undefined) {
         console.log('!!! found item[dim]:', item[dim])
       }
-      return item[dim] === undefined ? 'total' : item[dim]
-    }).sort((a, b) => { // сортировка чтоб total всегда был последним
-      if (b === 'total') {return -1}
+      return item[dim] === undefined ? 'subtotal' : item[dim]
+    }).sort((a, b) => { // сортировка, чтоб subtotal всегда был последним
+      if (b === 'subtotal') {return -1}
     })
-    // console.log("🚀 ~ newAr:", newAr)
     const unique = [...new Set(newAr)] // удаление дубликатов
-    console.log("🚀🚀 ~ unique:", unique)
-  
-    // не должны до сюда доходить
-    // if (unique.length === 1 && unique[0] === undefined) {
-    //   return 
-    // }
+
     if (unique.length === 1 && unique[0] !== undefined) {
       uniqueCols.push(unique ? [unique] : ['null']) // если столбец один - нужно положить его как unique=[[values]], иначе будет unique=[values]
       return 
     }
     uniqueCols.push(unique ? unique : 'null')
   })
-  
-  console.log("🚀 ~ subtotalsColsOn:", subtotalsOn)
-  console.log("🚀 ~ extra:", extra)
-  // для строк
-  // if (!forCols && subtotalsOn && extra) {
-  //   uniqueCols.forEach((el, i) => {
-  //     if (i !== 0) {
-  //       el.push(extra)
-  //     }
-  //   })
-  //   // uniqueCols[uniqueCols.length-1].push(extra)
-  // }
-
-  // для строк
-  // if (forCols && subtotalsOn && extra) {
-  // // if (!isMetricsInCols && subtotalsOn && extra) {
-  //   uniqueCols.forEach((el, i) => {
-  //     el.push(extra)
-  //   })
-  // }
-  // console.log("🚀 ~ uniqueCols:", uniqueCols)
-    // Обработка выбора расположения метрик
-    // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
+  // Обработка выбора расположения метрик
+  // Функция getUniqueValues должна вызываться для строк и столбцов с разным isMetricsInCols
   if (isMetricsInCols) {
     uniqueCols.push(metrics)
   }
-  
-  console.log("🚀 ~ uniqueCols:", uniqueCols)
-  // if (isMetricsInCols && subtotalsOn) {
-  //   uniqueCols.push('total')
-  // }
-  console.groupEnd()
   return uniqueCols
 }
 
@@ -85,6 +48,10 @@ export const getDimSpan = (arr, level) => {
   } else {
     return remainder.reduce((acc, el) => {return acc*el.length}, 1)
   }
+}
+
+export const getDimSpanSubtotalRow = (arr, level) => {
+  return arr[arr.length-1].length
 }
 
 /*
