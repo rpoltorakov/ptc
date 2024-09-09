@@ -12,11 +12,8 @@ export const MetricSelect = ({
   handleDelete
 }) => {
   const aggs = metricsAggs.map(el => ({ value: el, label: el }))
-
   const fields = metricsFields.map(el => ({ value: el, label: el }))
 
-
-  const field = metrics[i].match(/".*"/gi) ? metrics[i].match(/".*"/gi)[0] : '' 
   const [selectedAgg, setSelectedAgg] = React.useState(metrics[i].replaceAll(/".*?"/gi, '#')) // .replaceAll(/".*?"/gi, '#')
 
   const matched = metrics[i].match(/".*?"/gi) 
@@ -41,7 +38,6 @@ export const MetricSelect = ({
     <div style={{ display: 'flex', flexDirection: 'row', gap: '.35em', marginBottom:'0.5em' }}>
       <div>
         <Select
-          // defaultValue={aggs[i].label}
           defaultValue={selectedAgg}
           style={{
             width: 200,
@@ -54,7 +50,6 @@ export const MetricSelect = ({
 
       <div>
         <Select
-          // defaultValue={fields[i].label}
           defaultValue={selectedField}
           style={{
             width: 200,

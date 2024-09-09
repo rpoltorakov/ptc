@@ -8,9 +8,6 @@ export const getUniqueValues = (
   let uniqueCols = []
   dims.forEach((dim, i) => {
     const newAr = data.map((item) => {
-      if (item[dim] === undefined) {
-        console.log('!!! found item[dim]:', item[dim])
-      }
       return item[dim] === undefined ? 'subtotal' : item[dim]
     }).sort((a, b) => { // сортировка, чтоб subtotal всегда был последним
       if (b === 'subtotal') {return -1}

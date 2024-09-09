@@ -84,68 +84,58 @@ const config: ControlPanelConfig = {
               description: 'Enable column subtotals',
             },
           },
-        ], [
-          {
-            name: 'subtotalsOn',
-            config: {
-              type: 'CheckboxControl',
-              label: 'Enable subtotals',
-              default: false,
-              renderTrigger: true,
-              description: 'Enable subtotals',
-            },
-          },
-        ]
+        ],
       ]
     },
     {
-      label: t('Hello Controls!'),
+      label: 'Text Controls',
       expanded: true,
       controlSetRows: [
-        [
-          {
-            name: 'header_text',
-            config: {
-              type: 'TextControl',
-              default: 'Hello, World!',
-              renderTrigger: true,
-              label: t('Header Text'),
-              description: t('The text you want to see in the header'),
-            },
-          },
-        ],
-        [
-          {
-            name: 'bold_text',
-            config: {
-              type: 'CheckboxControl',
-              label: t('Bold Text'),
-              renderTrigger: true,
-              default: true,
-              description: t('A checkbox to make the '),
-            },
-          },
-        ],
+        // [
+        //   {
+        //     name: 'header_text',
+        //     config: {
+        //       type: 'TextControl',
+        //       default: 'Hello, World!',
+        //       renderTrigger: true,
+        //       label: t('Header Text'),
+        //       description: t('The text you want to see in the header'),
+        //     },
+        //   },
+        // ],
+        // [
+        //   {
+        //     name: 'bold_text',
+        //     config: {
+        //       type: 'CheckboxControl',
+        //       label: t('Bold Text'),
+        //       renderTrigger: true,
+        //       default: true,
+        //       description: t('A checkbox to make the '),
+        //     },
+        //   },
+        // ],
         [
           {
             name: 'header_font_size',
             config: {
-              type: 'SelectControl',
-              label: t('Font Size'),
-              default: 'xl',
-              choices: [
-                ['xxs', 'xx-small'],
-                ['xs', 'x-small'],
-                ['s', 'small'],
-                ['m', 'medium'],
-                ['l', 'large'],
-                ['xl', 'x-large'],
-                ['xxl', 'xx-large'],
-              ],
+              type: 'TextControl',
+              label: 'Header Font Size',
+              default: '14px',
               renderTrigger: true,
-              description: t('The size of your header font'),
+              description: 'The size of header font',
             },
           },
+          {
+            name: 'cell_font_size',
+            config: {
+              type: 'TextControl',
+              label: 'Cell Font Size',
+              default: '14px',
+              renderTrigger: true,
+              description: 'The size of cell font',
+            },
+          }
         ],
       ],
     },

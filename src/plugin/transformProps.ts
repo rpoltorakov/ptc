@@ -43,7 +43,7 @@ export default function transformProps(chartProps: ChartProps) {
   const { 
     boldText,
     headerFontSize, 
-    headerText,
+    cellFontSize,
     dimensions, 
     groupbyColumns, 
     groupbyRows,
@@ -106,7 +106,7 @@ export default function transformProps(chartProps: ChartProps) {
     data,
     boldText,
     headerFontSize,
-    headerText,
+    cellFontSize,
     formData,
     filterState,
     setDataMask,

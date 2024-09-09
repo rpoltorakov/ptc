@@ -1,5 +1,6 @@
 import { DragDropContext } from '@hello-pangea/dnd';
 import { ApiV1 } from '@superset-ui/core';
+import { Button, Popover } from 'antd';
 import React, { createRef, useEffect } from 'react';
 import buildQuery from './plugin/buildQuery';
 import { ColumnHeaders } from './plugin/Components/ColumnHeaders';
@@ -8,19 +9,13 @@ import { Metrics } from './plugin/Components/Metrics';
 import { Rows } from './plugin/Components/Rows';
 import { Styles } from './plugin/Components/styles';
 import { collectMetrics, getSubtotalsDims, getUniqueValues } from './plugin/utils';
-import { Button, Popover } from 'antd';
-
 
 export default function PivotTableC(props) {
+  console.log(props)
+  const { height, groupbyColumns, groupbyRows, dimensions } = props;
+  const { subtotalsColsOn, subtotalsRowsOn } = props.formData
+
   const [reload, setReload] = React.useState(false);
-  const handleReload = () => {
-    setReload(!reload)
-  }
-  console.log('-------------------------')
-  console.log('props', props)
-  const { height, groupbyColumns, groupbyRows, dimensions, subtotalsOn } = props;
-  const { grandTotalsOn, subtotalsColsOn, subtotalsRowsOn } = props.formData
-  
   const [dims, setDims] = React.useState([[...dimensions], [...groupbyColumns], [...groupbyRows]]) // пул измерений, колонки, строки
   const [metrics, setMetrics] = React.useState([...props.metrics])
   const [metricsAggs, setMetricsAggs] = React.useState([...props.metricsAggs])
@@ -29,6 +24,8 @@ export default function PivotTableC(props) {
   const [isMetricsInCols, setIsMetricsInCols] = React.useState(false) // по умолчанию - влево (в строках) = false
   const [data, setData] = React.useState([...props.data])
   const [subtotalsData, setSubtotalsData] = React.useState([])
+  const [loading, setLoading] = React.useState(false);
+  
 
   const [colsAr, setColsAr] = React.useState(
     getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics)
@@ -60,7 +57,6 @@ export default function PivotTableC(props) {
       metrics: metricsFormData,
       groupbyColumns: dims[1],
       groupbyRows: dims[2],
-      // groupby: [...dims[1], ...dims[2]],
     }
     delete newFormData.queries
     
@@ -73,18 +69,16 @@ export default function PivotTableC(props) {
     // данные без сабтоталов
     const dataNoSubtotals = await getDataNoSubtotals(formData, dims, metricsFormData)
     data.push(...dataNoSubtotals)
-    // setData([...newData.result[0].data])
-
 
     if (subtotalsRowsOn) {
+      // добавить сабтоталы строк
       const subtotalsDataRows = await getSubtotalsDataRows(props.formData, dims, metricsFormData)
-      // setData([...newData, ...subtotalsData])
       data.push(...subtotalsDataRows)  
     }
 
     if (subtotalsColsOn) {
+      // добавить сабтоталы колонок
       const subtotalsDataCols = await getSubtotalsDataCols(props.formData, dims, metricsFormData)
-      console.log("🚀 ~ subtotalsDataCols:", subtotalsDataCols)
       data.push(...subtotalsDataCols)
     }
     setData([...data])
@@ -123,7 +117,6 @@ export default function PivotTableC(props) {
   // Функция получения данных сабтоталов по столбцам
   async function getSubtotalsDataCols(formData, dims, metricsFormData) {
     const cols = getSubtotalsDims(dims[1])
-    console.log("🚀🚀🚀🚀 ~ cols:", cols)
     const rows = dims[2]
     const subtotalDataPopulated = []
     
@@ -138,10 +131,7 @@ export default function PivotTableC(props) {
         }
         delete newFormData.queries
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
-        console.log("🚀 ~ newData -1 :", newData)
-        // let difference = cols[0];
         let difference = cols[cols.length-1]
-        console.log("🚀🚀 ~ difference:", difference)
   
         // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
         const populatedData = newData.map((el, i) => {
@@ -151,7 +141,7 @@ export default function PivotTableC(props) {
           })        
           return {...el, ...res}
         })
-        console.log("🚀 ~ populatedData -1 :", populatedData)
+
         subtotalDataPopulated.push(...populatedData)
       } else {
         if (cols.length === 1) {
@@ -163,12 +153,9 @@ export default function PivotTableC(props) {
           groupbyColumns: cols[i], 
           groupbyRows: rows
         }
-        console.log("🚀 ~ cols[i]:", cols[i])
         delete newFormData.queries
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
-        console.log("🚀 ~ newData:", newData)
         let difference = dims[1].filter(x => !cols[i].includes(x)); // разница между двумя массивами
-        console.log("🚀🚀 ~ difference:", difference)
   
         // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
         const populatedData = newData.map((el, i) => {
@@ -178,33 +165,23 @@ export default function PivotTableC(props) {
           })        
           return {...el, ...res}
         })
-        console.log("🚀 ~ populatedData:", populatedData)
+
         subtotalDataPopulated.push(...populatedData)
       }
     }
     return subtotalDataPopulated
   } 
   
-  
-
   // на изменение колонок/строк - запрос на апи
   useEffect(() => {
     getNewData(props.formData, dims, metricsFormData)
   }, [dims, metricsFormData, reload])
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
-    console.log('data is changed', data.filter(el => Object.values(el).includes('subtotal')))
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal', true))
-    console.log("🚀 ~ getUniqueValues cols:", getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal'))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'subtotal', false))
-    console.log("🚀 ~ getUniqueValues rows:", getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'subtotal'))
   }, [dims, data, metricsFormData, isMetricsInCols, reload])
   // на изменение строк - изменить сабототалы (добавить в данные)
-  useEffect(() => {
-    // if (subtotalsRowsOn) {
-    //   getSubtotals(props.formData, dims, metricsFormData, isMetricsInCols)
-    // }
-  }, [dims, metricsFormData, isMetricsInCols, reload]);
   
   const handleMetricsSwitch = () => {
     // Переключение метрик в строках/столбцах
@@ -220,8 +197,10 @@ export default function PivotTableC(props) {
     setMetricsFormData([...metricsFormData, metricsFormData[metricsFormData.length-1]])
     setMetrics([...metrics, metrics[metrics.length-1]])
   }
-      
-    
+  const handleReload = () => {
+    // кнопка перезагрузки
+    setReload(!reload)
+  }
   // колбэк для драг'н'дропа
   const handleDragEnd = (result) => {
     const reorder = (list, startIndex, endIndex) => {
@@ -270,12 +249,14 @@ export default function PivotTableC(props) {
   const rootElem = createRef();
   return (
       <Styles
-      ref={rootElem}
-      boldText={props.boldText}
-      headerFontSize={props.headerFontSize}
-      height={height}
+        ref={rootElem}
+        boldText={props.boldText}
+        height={height}
+        headerFontSize={props.headerFontSize}
+        cellFontSize={props.cellFontSize}
       >
     <div className='ptc-wrapper'>
+      
       <DragDropContext onDragEnd={handleDragEnd}>
       <div className='app-ptc'>
         <DimPool 
@@ -288,7 +269,7 @@ export default function PivotTableC(props) {
           />
         <div className='wrapper'>
           <div className='colss'>
-            <div style={{ display: 'flex', position: 'relative', flexDirection:'column' }}>
+            <div style={{ display: 'flex', position: 'relative', flexDirection: 'column', gap: '0.25em' }}>
               
               <Popover
                 content={<Metrics 
@@ -330,13 +311,9 @@ export default function PivotTableC(props) {
 
             <table id='t' className='table table-pvc'>
               <thead>
-                <ColumnHeaders 
-                  colsArr={colsAr} 
-                  rowsArr={rowsAr} 
-                  isMetricsInCols={isMetricsInCols}
-                  subtotalsColsOn={subtotalsColsOn}
-                  subtotalsRowsOn={subtotalsRowsOn}
-                  subtotalsData={subtotalsData}
+                <ColumnHeaders
+                  colsArr={colsAr}
+                  rowsArr={rowsAr}
                   reload={reload}
                 />
               </thead>

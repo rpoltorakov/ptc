@@ -19,19 +19,6 @@ export const Rows = ({
       return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
     }
   }
-  // декартово произведение массивов
-  const createMatrix = (a, subtotalsRowsOn) => {
-    const cartesian = (...a) => {
-      if (a.length === 1) {
-        return a[0].map(e => [e])
-      } else {
-        return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
-      }
-    }
-    
-    let result = cartesian(...a)
-    return result
-  }
 
   // удаление дубликатов
   const dedupMatrix = (rowMatrix, multiplicators) => {
@@ -82,23 +69,9 @@ export const Rows = ({
     return value ? value[metric] : null
   }
 
-  const getRowSubtotal = (dataRow, agg) => {
-    if (agg = 'SUM') {
-      return dataRow.reduce((acc, cur) => acc + cur, 0)
-    }
-  }
-
-  const getColumnSubtotal = (colsMatrix, dataRow, agg) => {
-    return colsMatrix.map((col, i) => {
-      let result = 0
-      dataRow.forEach((row, j) => {
-        result += row[i]
-      })
-      return result
-    })
-  }
 
   const rowsMatrix = cartesian(...rowsArr)
+  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
 
   const result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
@@ -119,7 +92,7 @@ export const Rows = ({
               // если елемент существует - возвращаем ячейку
               el || el === null  ?
                 <td
-                  className='td header'
+                  className={`td header ${rowsMatrix[i].includes('subtotal') ? 'tdv-total' : ''}`}
                   key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
                   rowSpan={el === '' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
                 >
@@ -131,10 +104,10 @@ export const Rows = ({
           }
 
           { // ячейки данных
-            dataRows[i].map((el, k) => (
+            dataRows[i].map((el, j) => (
               <td
-                key={'dataCell' + k.toString() + 'row' + i.toString()}
-                className='tdv'
+                key={'dataCell' + j.toString() + 'row' + i.toString()}
+                className={`tdv ${rowsMatrix[i].includes('subtotal') || colsMatrix[j].includes('subtotal') ? 'tdv-total' : ''}`}
               >{el}</td>
             ))
           }

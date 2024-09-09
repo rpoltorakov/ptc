@@ -71,12 +71,17 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   }
 
   .dim-elem {
-    margin: 0.5em;
+    background-color: #fff;
+    margin: auto 0.5em;
     border: 1px solid #c0c0c0;
     border-radius: 2px;
     padding:  0.5em 1.5em;
     cursor: grab;
     word-wrap: break-word;
+  }
+  
+  .dim-pool-col > .dim-elem {
+    margin: 0.5em;
   }
 
   .dim-metric {
@@ -135,6 +140,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   
   .tdv {
     color: #222429;
+    font-size: ${({cellFontSize}) => cellFontSize};
   }
 
   .tdv-total {
@@ -153,6 +159,10 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   }
   .table > thead > tr > th {
     border-bottom: 1px solid #c0c0c0;
+  }
+  
+  .header {
+    font-size: ${({headerFontSize}) => headerFontSize};
   }
 `;
 

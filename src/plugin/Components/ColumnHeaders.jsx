@@ -7,11 +7,6 @@ import {
 export const ColumnHeaders = ({
   colsArr,
   rowsArr,
-  isMetricsInCols,
-  showTotal,
-  subtotalsColsOn,
-  subtotalsRowsOn,
-  subtotalsData
 }) => {
   const getDimsHier = (colsArr) => {
     let indicators = colsArr
@@ -21,7 +16,6 @@ export const ColumnHeaders = ({
       if (level === indicators.length) {
         return;
       }
-
       let length = indicators[level].length;
       for (let i = 0; i < length; i++) {
           result.push(indicators[level][i]);
@@ -44,11 +38,11 @@ export const ColumnHeaders = ({
           />
         ))}
 
-        {colsHier.filter(el => el.level === i).map((el, i) => {
+        {colsHier.filter(el => el.level === i).map((el, j) => {
           const span = getDimSpan(colsArr, el.level)
           return <td
-            key={el+i}
-            className='td header'
+            key={el+j}
+            className={`td header ${el.value === 'subtotal' ? 'tdv-total' : ''}`}
             colSpan={span}
           >{renderValue(el.value)}</td>
         })}
