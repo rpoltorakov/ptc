@@ -11,7 +11,6 @@ import { Styles } from './plugin/Components/styles';
 import { collectMetrics, getSubtotalsDims, getUniqueValues } from './plugin/utils';
 
 export default function PivotTableC(props) {
-  console.log(props)
   const { height, groupbyColumns, groupbyRows, dimensions } = props;
   const { subtotalsColsOn, subtotalsRowsOn } = props.formData
 

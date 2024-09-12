@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { t, validateNonEmpty } from '@superset-ui/core';
 import { ControlPanelConfig, sharedControls } from '@superset-ui/chart-controls';
 
@@ -91,30 +93,6 @@ const config: ControlPanelConfig = {
       label: 'Text Controls',
       expanded: true,
       controlSetRows: [
-        // [
-        //   {
-        //     name: 'header_text',
-        //     config: {
-        //       type: 'TextControl',
-        //       default: 'Hello, World!',
-        //       renderTrigger: true,
-        //       label: t('Header Text'),
-        //       description: t('The text you want to see in the header'),
-        //     },
-        //   },
-        // ],
-        // [
-        //   {
-        //     name: 'bold_text',
-        //     config: {
-        //       type: 'CheckboxControl',
-        //       label: t('Bold Text'),
-        //       renderTrigger: true,
-        //       default: true,
-        //       description: t('A checkbox to make the '),
-        //     },
-        //   },
-        // ],
         [
           {
             name: 'header_font_size',

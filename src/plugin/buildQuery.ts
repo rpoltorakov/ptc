@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import { 
   AdhocColumn, 
   buildQueryContext, 
@@ -21,11 +23,9 @@ import {
  */
 
 export default function buildQuery(formData: QueryFormData) {
-  const { groupbyColumns=[], groupbyRows=[], extra_form_data } = formData;
+  const { groupbyColumns=[], groupbyRows=[] } = formData;
   
-    return buildQueryContext(formData, baseQueryObject => {
-
-    // const { ownState } = baseQueryObject
+    return buildQueryContext(formData, (baseQueryObject: any) => {
     const columns = Array.from(
       new Set([
         ...ensureIsArray(groupbyColumns),

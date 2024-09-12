@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,11 +18,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { t, ChartMetadata, ChartPlugin } from '@superset-ui/core';
+import { ChartMetadata, ChartPlugin } from '@superset-ui/core';
 import buildQuery from './buildQuery';
 import controlPanel from './controlPanel';
 import transformProps from './transformProps';
-import thumbnail from '../images/thumbnail.png';
+import thumbnail from '../images/icon.png';
 
 export default class PivotTableC extends ChartPlugin {
   /**
@@ -35,8 +37,8 @@ export default class PivotTableC extends ChartPlugin {
    */
   constructor() {
     const metadata = new ChartMetadata({
-      description: 'Pivot Table C',
-      name: t('Pivot Table C'),
+      description: 'Pivot Table C',// Pivot Table enhanced with drag'n'drop, 
+      name: 'Pivot Table Enhanced',
       thumbnail,
     });
 
