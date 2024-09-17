@@ -2,7 +2,4 @@
 > pivot-table-enhanced@1.0.0 dev
 > BABEL_OUTPUT=esm babel src --extensions ".ts,.tsx,.js,.jsx" --watch --copy-files --out-dir esm
 
-Browserslist: caniuse-lite is outdated. Please run:
-  npx browserslist@latest --update-db
-  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
-Successfully compiled 17 files with Babel (4472ms).
+Successfully compiled 17 files with Babel (2975ms).

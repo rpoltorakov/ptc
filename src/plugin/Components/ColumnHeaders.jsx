@@ -31,12 +31,14 @@ export const ColumnHeaders = ({
   return colsArr.map((el, i) => {
     return (
       <tr key={el.toString()+i}>
-        {rowsArr.map((el, i) => (
-          <th
-            className='tdv'
-            key={el.toString()+i.toString()+'nullCross'}
-          />
-        ))}
+        { // пересечений "шапок" - большая пустая ячейка
+          rowsArr.map((el, i) => (
+            <th
+              className='tdv'
+              key={el.toString()+i.toString()+'nullCross'}
+            />
+          ))
+        }
 
         {colsHier.filter(el => el.level === i).map((el, j) => {
           const span = getDimSpan(colsArr, el.level)
