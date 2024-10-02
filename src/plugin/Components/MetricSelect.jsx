@@ -14,13 +14,13 @@ export const MetricSelect = ({
   const aggs = metricsAggs.map(el => ({ value: el, label: el }))
   const fields = metricsFields.map(el => ({ value: el, label: el }))
 
-  const [selectedAgg, setSelectedAgg] = React.useState(metrics[i].replaceAll(/".*?"/gi, '#')) // .replaceAll(/".*?"/gi, '#')
-
-  const matched = metrics[i].match(/".*?"/gi) 
-  const [selectedField, setSelectedField] = React.useState(matched ? matched[0].slice(1,-1) : 'fieldNotFound')
+  const [selectedAgg, setSelectedAgg] = React.useState(metricsAggs[i])
+  const [selectedField, setSelectedField] = React.useState(metricsFields[i].column_name)
   
   React.useEffect(() => {
-    handleMetricsChange(metricsFormData, i, selectedAgg, `\"${selectedField}\"`);
+    if (metricsFormData[i].expressionType === 'SIMPLE') {
+      handleMetricsChange(metricsFormData, i, selectedAgg, `\"${selectedField}\"`, selectedField);
+    }
   }, [selectedAgg, selectedField])
   
 
@@ -28,7 +28,7 @@ export const MetricSelect = ({
     setSelectedAgg(value)
   };
   const handleChangeField = (value) => {
-    setSelectedField(value)
+    setSelectedField(metricsFields.find(el => el.column.column_name === value))
   }
   const handleDeleteButton = () => {
     handleDelete(i)
@@ -64,7 +64,7 @@ export const MetricSelect = ({
           onClick={handleDeleteButton} 
           type="primary" 
           danger
-          disabled={i===0?true:false}
+          disabled={metrics.length === 1 ? true : false}
         > Delete </Button>
       </div>
     </div>

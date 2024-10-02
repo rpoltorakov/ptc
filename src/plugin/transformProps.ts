@@ -55,13 +55,6 @@ export default function transformProps(chartProps: ChartProps) {
   } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
   
-  /*
-    Функция собирания метрик из formData
-    три варианта работы:
-      1. default - собирает лейблы
-      2. aggs - собирает из sqlExpression формулы агрегаций регексом
-      3. fiels - собирает из sqlExpression поля регексом
-  */
   const collectMetrics = (formData:any, type:'def'|'aggs'|'fields') => {
     if (type === 'def') {
       return formData.metrics.map((metric:any) => {
@@ -71,34 +64,36 @@ export default function transformProps(chartProps: ChartProps) {
         return metric.label
       })
     }
+
     if (type === 'aggs') {
-      return Array.from(new Set(formData.metrics.map((metric:any) => {
-        if (typeof metric === 'string') {
-          return metric
-        } 
+      const sqlAggs = Array.from(new Set(formData.metrics.map((metric:any) => {
         if (metric.expressionType === 'SIMPLE') {
           return metric.aggregate
         }
-        if (metric.expressionType === 'SQL') {
-          // const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
-          // return metric.sqlExpression.replaceAll(field, '#')
-          return metric.sqlExpression.replaceAll(/".*?"/gi, '#')
+      }))).filter(el => el)
+      
+      const additionalAggs = [
+        'COUNT',
+        'SUM',
+        'AVG',
+        'MIN',
+        'MAX',
+      ]
+      additionalAggs.forEach((agg) => {
+        if (!sqlAggs.includes(agg) && !sqlAggs.includes(agg + '(#)')) {
+          sqlAggs.push(agg)
         }
-      })))
+      })
+      return sqlAggs
     }
+
+
     if (type === 'fields') {
       return Array.from(new Set(formData.metrics.map((metric:any) => {
-        if (typeof metric === 'string') {
-          return metric
-        }
         if (metric.expressionType === 'SIMPLE') {
-          return metric.column.column_name
+          return metric.column
         }
-        if (metric.expressionType === 'SQL') {
-          const matched = metric.sqlExpression.match(/".*?"/gi)
-          return matched ? matched[0].slice(1,-1) : 'fieldNotFound'
-        }
-      })))
+      }))).filter(el => el)
     }
   }
 

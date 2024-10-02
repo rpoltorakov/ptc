@@ -6,11 +6,7 @@ export const Rows = ({
     colsArr,
     data,
     dims,
-    isMetricsInCols,
-    showTotal,
-    subtotalsColsOn,
-    subtotalsRowsOn,
-    subtotalsData
+    isMetricsInCols
   }) => {
   const cartesian = (...a) => {
     if (a.length === 1) {
@@ -29,9 +25,8 @@ export const Rows = ({
         row.forEach((cell, k) => {
           if (i % multiplicators[k] === 0) {
             bufferArray.push(cell)
-          }
-          else {
-            bufferArray.push('') // '' - метка что ячейки нужно объединить (span=0)
+          } else {
+            bufferArray.push('rplc') // '' - метка что ячейки нужно объединить (span=0)
           }
         })
         result.push(bufferArray)
@@ -69,19 +64,17 @@ export const Rows = ({
     return value ? value[metric] : null
   }
 
-
   const rowsMatrix = cartesian(...rowsArr)
-  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
 
   const result = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
+
   const dataRows = result.map((row, i) => {
     return colsMatrix.map((col, k) => {
       const value = findDataCell(data, col, rowsMatrix[i], isMetricsInCols, dims)
       return value
     })
   })
-
 
   return (
     <>
@@ -90,16 +83,17 @@ export const Rows = ({
           { // заголовки в строках
             row.map((el, j) => (
               // если елемент существует - возвращаем ячейку
-              el || el === null  ?
+              (el || el === null || el === '') && el !== 'rplc'  ?
                 <td
                   className={`td header ${rowsMatrix[i].includes('subtotal') ? 'tdv-total' : ''}`}
                   key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
-                  rowSpan={el === '' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
+                  rowSpan={el === 'rplc' ? 0 : getDimSpan(rowsArr, j)} // '' - метка что ячейки нужно объединить (span=0)
                 >
                   {renderValue(el)}
                 </td> 
-                : // если нет: '' - для объединения ячеек --> null что бы объединить, '\u00A0' (nbsp) как значение измерения
-                (el === '') ? null : '\u00A0'
+                : // если нет: 'rplc' - для объединения ячеек --> что бы объединить ставим null, 
+                  // '\u00A0' (non-breaking space) как значение измерения (не должны до сюда доходить)
+                (el === 'rplc') ? null : '\u00A0'
             ))
           }
 

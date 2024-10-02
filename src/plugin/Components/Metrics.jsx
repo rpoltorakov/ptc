@@ -1,8 +1,9 @@
 import React from "react";
 import Switch from "react-switch";
 import { MetricSelect } from "./MetricSelect";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { InsertRowLeftOutlined, InsertRowAboveOutlined } from '@ant-design/icons';
+import { MetricSQL } from "./MetricSQL";
 
 export const Metrics = ({
   isOpened, 
@@ -14,28 +15,38 @@ export const Metrics = ({
   metricsFormData,
   handleMetricsChange,
   handleDelete,
-  handleAddMetric
+  handleAddMetric,
+  warning
 }) => {
+  console.log("🚀 ~ metrics:", metrics)
+  // const sqlMetrics = metrics.slice(metricsFormData.filter(el => el.expressionType === 'SIMPLE').length)
+  const sqlMetrics = metrics.filter((el, i) => {})
+  console.log("🚀 ~ metricsFields:", metricsFields)
+  console.log("🚀 ~ sqlMetrics:", sqlMetrics)
   return (
   <>
     <div
       className={`metrics ${isOpened ? 'metrics-opened' : ''}`}
     >
       <div style={{ marginBottom: '1em', display: 'flex' }}>
-        <InsertRowLeftOutlined style={{ color: '#555555', fontSize: '2em', margin: '0 0.3em auto 0' }} />
-        <label>
-          <Switch 
-            onChange={handleChange} 
-            checked={checked}
-            uncheckedIcon
-            checkedIcon
-            onColor='#888'
-          />
-        </label>
-        <InsertRowAboveOutlined style={{ color: '#555555', fontSize: '2em', margin: '0 0 auto 0.3em'}} />
+        <Tooltip placement="right" title={warning} visible={warning ? true : false}>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <InsertRowLeftOutlined style={{ color: '#555555', fontSize: '2em', margin: '0 0.3em auto 0' }} />
+            <label>
+              <Switch 
+                onChange={handleChange} 
+                checked={checked}
+                uncheckedIcon
+                checkedIcon
+                onColor='#888'
+              />
+            </label>
+            <InsertRowAboveOutlined style={{ color: '#555555', fontSize: '2em', margin: '0 0 auto 0.3em'}} />
+          </div>
+        </Tooltip>
       </div>
 
-      {metrics.map((metric, i) => (
+      {metricsFields.map((metricField, i) => (
         <MetricSelect 
           metricsFields={metricsFields}
           metricsAggs={metricsAggs}
@@ -48,10 +59,20 @@ export const Metrics = ({
         />
       ))}
 
+      {sqlMetrics.map((metric, i) => (
+        <MetricSQL 
+          metric={metric}
+          i={i + metricsFields.length}
+          key={i+'metricSQL'}
+          handleDelete={handleDelete}
+        />
+      ))}
+
       <Button
         type="primary"
         onClick={handleAddMetric}
         style={{ marginTop: '1em' }}
+        metrics={metrics}
       > + </Button>
     </div>
   </>)

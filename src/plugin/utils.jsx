@@ -77,6 +77,19 @@ export const getMultiplicators = (ar) => {
   Функция собирания метрик из formData
 */
 export const collectMetrics = (formDataMetrics, type) => {
+  if (type === 'simple') {
+    return formDataMetrics.map((metric) => {
+      if (typeof metric === 'string') {
+        return metric
+      }
+      if (metric.expressionType === 'SIMPLE') {
+        return `${metric.aggregate}(${metric.column.column_name})`
+      }
+      if (metric.expressionType === 'SQL') {
+        return metric.label
+      }
+    })
+  }
   if (type === 'def') {
     return formDataMetrics.map((metric) => {
       if (typeof metric === 'string') {
@@ -87,31 +100,31 @@ export const collectMetrics = (formDataMetrics, type) => {
   }
   if (type === 'aggs') {
     return Array.from(new Set(formDataMetrics.map((metric) => {
-      if (typeof metric === 'string') {
-        return metric
-      } 
+      // if (typeof metric === 'string') {
+      //   return metric
+      // } 
       if (metric.expressionType === 'SIMPLE') {
         return metric.aggregate
       }
-      if (metric.expressionType === 'SQL') {
-        const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
-        return metric.sqlExpression.replaceAll(field, '#')
-        // return metric.sqlExpression
-      }
+      // if (metric.expressionType === 'SQL') {
+      //   const field = metric.sqlExpression.match(/".*"/gi) ? metric.sqlExpression.match(/".*"/gi)[0] : '' 
+      //   return metric.sqlExpression.replaceAll(field, '#')
+      //   // return metric.sqlExpression
+      // }
     })))
   }
   if (type === 'fields') {
     return Array.from(new Set(formDataMetrics.map((metric) => {
-      if (typeof metric === 'string') {
-        return metric
-      }
+      // if (typeof metric === 'string') {
+      //   return metric
+      // }
       if (metric.expressionType === 'SIMPLE') {
         return metric.column.column_name
       }
-      if (metric.expressionType === 'SQL') {
-        const matched = metric.sqlExpression.match(/".*"/gi)
-        return matched ? matched[0].slice(1,-1) : 'fieldNotFound'
-      }  
+      // if (metric.expressionType === 'SQL') {
+      //   const matched = metric.sqlExpression.match(/".*"/gi)
+      //   return matched ? matched[0].slice(1,-1) : 'fieldNotFound'
+      // }  
       
     })))
   }

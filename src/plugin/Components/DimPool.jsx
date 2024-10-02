@@ -30,6 +30,10 @@ export function DimPool(props) {
                   index={i}
                   metric={props.metrics ? true : false}
                   metrics={props.metricsAr}
+                  isDragDisabled={
+                    props.type === 'rows' ? props.dims[2].length === 1 && props.isMetricsInCols :
+                    props.type === 'cols' ? props.dims[1].length === 1 && !props.isMetricsInCols : false
+                  }
                 />
               )
             }) : ''}

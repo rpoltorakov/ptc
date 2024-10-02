@@ -2,4 +2,101 @@
 > pivot-table-enhanced@1.0.0 dev
 > BABEL_OUTPUT=esm babel src --extensions ".ts,.tsx,.js,.jsx" --watch --copy-files --out-dir esm
 
-Successfully compiled 17 files with Babel (2975ms).
+Browserslist: caniuse-lite is outdated. Please run:
+  npx browserslist@latest --update-db
+  Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+Successfully compiled 17 files with Babel (3411ms).
+Successfully compiled 1 file with Babel (331ms).
+Successfully compiled 1 file with Babel (151ms).
+Successfully compiled 1 file with Babel (123ms).
+Successfully compiled 1 file with Babel (133ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (119ms).
+Successfully compiled 1 file with Babel (192ms).
+Successfully compiled 1 file with Babel (201ms).
+SyntaxError: /opt/superset_roma/ptc/src/PivotTableC.jsx: Unexpected token (235:113)
+
+  233 |   // При нажатии на "+" - добавить копию последней метрики
+  234 |   const handleAddMetric = () => {
+> 235 |     setMetricsFormData([...metricsFormData, metricsFormData.filter(metric => metric.expressionType === 'SIMPLE').[metricsFormData.length-1]])
+      |                                                                                                                  ^
+  236 |     setMetrics([...metrics, metrics[metrics.length-1]])
+  237 |   }
+  238 |   // кнопка перезагрузки
+    at Object._raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:569:17)
+    at Object.raiseWithData (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:562:17)
+    at Object.raise (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:523:17)
+    at Object.unexpected (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:3601:16)
+    at Object.parseIdentifierName (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12995:18)
+    at Object.parseIdentifier (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:12975:23)
+    at Object.parseMember (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11735:28)
+    at Object.parseSubscript (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11711:21)
+    at Object.parseSubscript (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:9444:18)
+    at Object.parseSubscripts (/opt/superset_roma/ptc/node_modules/@babel/parser/lib/index.js:11675:19) {
+  loc: Position { line: 235, column: 113 },
+  pos: 9172,
+  code: 'BABEL_PARSE_ERROR',
+  reasonCode: 'UnexpectedToken'
+}
+Successfully compiled 1 file with Babel (121ms).
+Successfully compiled 1 file with Babel (195ms).
+Successfully compiled 1 file with Babel (210ms).
+Successfully compiled 1 file with Babel (205ms).
+Successfully compiled 1 file with Babel (188ms).
+Successfully compiled 1 file with Babel (114ms).
+Successfully compiled 1 file with Babel (114ms).
+Successfully compiled 1 file with Babel (150ms).
+Successfully compiled 1 file with Babel (424ms).
+Successfully compiled 1 file with Babel (176ms).
+Successfully compiled 1 file with Babel (117ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (117ms).
+Successfully compiled 1 file with Babel (114ms).
+Successfully compiled 1 file with Babel (123ms).
+Successfully compiled 1 file with Babel (354ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (119ms).
+Successfully compiled 1 file with Babel (180ms).
+Successfully compiled 1 file with Babel (129ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (104ms).
+Successfully compiled 1 file with Babel (105ms).
+Successfully compiled 1 file with Babel (115ms).
+Successfully compiled 1 file with Babel (106ms).
+Successfully compiled 1 file with Babel (105ms).
+Successfully compiled 1 file with Babel (108ms).
+Successfully compiled 1 file with Babel (113ms).
+Successfully compiled 1 file with Babel (106ms).
+Successfully compiled 1 file with Babel (119ms).
+Successfully compiled 1 file with Babel (108ms).
+Successfully compiled 1 file with Babel (107ms).
+Successfully compiled 1 file with Babel (106ms).
+Successfully compiled 1 file with Babel (105ms).
+Successfully compiled 1 file with Babel (107ms).
+Successfully compiled 1 file with Babel (107ms).
+Successfully compiled 1 file with Babel (116ms).
+Successfully compiled 1 file with Babel (113ms).
+Successfully compiled 1 file with Babel (112ms).
+Successfully compiled 1 file with Babel (118ms).
+Successfully compiled 1 file with Babel (120ms).
+Successfully compiled 1 file with Babel (107ms).
+Successfully compiled 1 file with Babel (111ms).
+Successfully compiled 1 file with Babel (108ms).
+Successfully compiled 1 file with Babel (123ms).
+Successfully compiled 1 file with Babel (125ms).
+Successfully compiled 1 file with Babel (116ms).
+Successfully compiled 1 file with Babel (178ms).
+Successfully compiled 1 file with Babel (190ms).
+Successfully compiled 1 file with Babel (115ms).
+Successfully compiled 1 file with Babel (259ms).
+Successfully compiled 1 file with Babel (127ms).
+Successfully compiled 1 file with Babel (116ms).
+Successfully compiled 1 file with Babel (117ms).
+Successfully compiled 1 file with Babel (108ms).
+Successfully compiled 1 file with Babel (113ms).
+Successfully compiled 1 file with Babel (120ms).
+Successfully compiled 1 file with Babel (120ms).
+Successfully compiled 1 file with Babel (117ms).
+Successfully compiled 1 file with Babel (208ms).

@@ -11,6 +11,7 @@ import { Styles } from './plugin/Components/styles';
 import { collectMetrics, getSubtotalsDims, getUniqueValues } from './plugin/utils';
 
 export default function PivotTableC(props) {
+  // console.log("🚀 ~ props:", props)
   const { height, groupbyColumns, groupbyRows, dimensions } = props;
   const { subtotalsColsOn, subtotalsRowsOn } = props.formData
 
@@ -24,8 +25,8 @@ export default function PivotTableC(props) {
   const [data, setData] = React.useState([...props.data])
   const [subtotalsData, setSubtotalsData] = React.useState([])
   const [loading, setLoading] = React.useState(false);
-  
-
+  const [formData, setFormData] = React.useState(props.formData);
+  const [warning, setWarning] = React.useState(false);
   const [colsAr, setColsAr] = React.useState(
     getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics)
   )
@@ -35,33 +36,28 @@ export default function PivotTableC(props) {
   const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
   
   // изменение agg + field метрик
-  const handleMetricsChange = (metricsFD, i, agg, field) => {
+  const handleMetricsChange = (metricsFD, i, agg, fieldSQL, field) => {
     const generateSQLExpr = (agg, field) => {
       return agg.replaceAll('#', field) 
     }
     const newMetricsFD = [...metricsFormData]
-    newMetricsFD[i] = {
-      ...metricsFormData[i],
-      sqlExpression: generateSQLExpr(agg, field),
-      label: generateSQLExpr(agg, field)
+    if (newMetricsFD[i].expressionType === 'SIMPLE') {
+      newMetricsFD[i] = {
+        ...metricsFormData[i],
+        aggregate: agg,
+        label: `${agg}(${field})`,
+        column: {
+          ...metricsFormData[i].column,
+          column_name: field
+        }
+      }
+      console.log("🚀 ~ newMetricsFD:", newMetricsFD)
+      console.log(collectMetrics(newMetricsFD, 'simple'))
+      setMetricsFormData(newMetricsFD)
+      setMetrics(collectMetrics(newMetricsFD, 'simple'))
     }
-    setMetricsFormData(newMetricsFD)
-    setMetrics(collectMetrics(newMetricsFD, 'def'))
   }
-  
-  // данные без сабтоталов
-  async function getDataNoSubtotals(formData, dims, metricsFormData) {
-    const newFormData = {
-      ...formData,
-      metrics: metricsFormData,
-      groupbyColumns: dims[1],
-      groupbyRows: dims[2],
-    }
-    delete newFormData.queries
-    
-    const data = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
-    return data
-  }
+ 
   // Функция получения данных
   async function getNewData(formData, dims, metricsFormData)  {
     const data = []
@@ -82,7 +78,21 @@ export default function PivotTableC(props) {
     }
     setData([...data])
   }
-  
+   
+  // Функция получения данных без сабтоталов
+  async function getDataNoSubtotals(formData, dims, metricsFormData) {
+    const newFormData = {
+      ...formData,
+      metrics: metricsFormData,
+      groupbyColumns: dims[1],
+      groupbyRows: dims[2],
+      adhoc_filters: props.formData.adhocFilters,
+      extra_form_data: props.formData.extraFormData
+    }
+
+    const data = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+    return data
+  }
   // Функция получения данных сабтоталов по строкам
   async function getSubtotalsDataRows(formData, dims, metricsFormData) {
     const cols = dims[1]
@@ -94,9 +104,11 @@ export default function PivotTableC(props) {
         ...formData,
         metrics: metricsFormData,
         groupbyColumns: cols,
-        groupbyRows: rows[i]
+        groupbyRows: rows[i],
+        adhoc_filters: formData.adhocFilters,
+        extra_form_data: formData.extraFormData
       }
-      delete newFormData.queries
+
       const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
       let difference = dims[2].filter(x => !rows[i].includes(x)); // разница между двумя массивами
 
@@ -112,7 +124,6 @@ export default function PivotTableC(props) {
     }
     return subtotalDataPopulated
   }  
-
   // Функция получения данных сабтоталов по столбцам
   async function getSubtotalsDataCols(formData, dims, metricsFormData) {
     const cols = getSubtotalsDims(dims[1])
@@ -126,9 +137,11 @@ export default function PivotTableC(props) {
           ...formData,
           metrics: metricsFormData,
           groupbyColumns: [], // только строки
-          groupbyRows: rows
+          groupbyRows: rows,
+          adhoc_filters: formData.adhocFilters,
+          extra_form_data: formData.extraFormData
         }
-        delete newFormData.queries
+
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
         let difference = cols[cols.length-1]
   
@@ -152,7 +165,7 @@ export default function PivotTableC(props) {
           groupbyColumns: cols[i], 
           groupbyRows: rows
         }
-        delete newFormData.queries
+        // delete newFormData.queries
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
         let difference = dims[1].filter(x => !cols[i].includes(x)); // разница между двумя массивами
   
@@ -173,35 +186,62 @@ export default function PivotTableC(props) {
   
   // на изменение колонок/строк - запрос на апи
   useEffect(() => {
-    getNewData(props.formData, dims, metricsFormData)
+    setWarning('')
+    getNewData(formData, dims, metricsFormData)
+    console.log('------ metrics ------')
+    console.log('metricsFormData', metricsFormData)
+    console.log('metrics', metrics)
+    console.log('metricsFields', metricsFields)
+    console.log('metricsAggs', metricsAggs)
+    console.log('---------------------')
   }, [dims, metricsFormData, reload])
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal', true))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'subtotal', false))
   }, [dims, data, metricsFormData, isMetricsInCols, reload])
-  // на изменение строк - изменить сабототалы (добавить в данные)
   
+  // Переключение метрик в строках/столбцах
   const handleMetricsSwitch = () => {
-    // Переключение метрик в строках/столбцах
-    setIsMetricsInCols(!isMetricsInCols)
+    if (isMetricsInCols) {
+      if (dims[1].length > 0) {
+        setIsMetricsInCols(false)
+        setWarning('')
+      } else {
+        setWarning('Columns cannot be empty')
+      }
+    } else {
+      if (dims[2].length > 0) {
+        setIsMetricsInCols(true)
+        setWarning('')
+      } else {
+        setWarning('Rows cannot be empty')
+      }
+    }
   }
+  // Удаление метрики - удаляет только из формы, в массивах аггрегаций и полей - нужно оставить
   const handleDeleteMetric = (index) => {
-    // Удаление метрики - удаляет только из формы, в массивах аггрегаций и полей - нужно оставить
     setMetricsFormData([...metricsFormData.filter((el, i) => i !== index)])
     setMetrics([...metrics.filter((el, i) => i !== index)])
   }
+  // При нажатии на "+" - добавить копию последней SIMPLE метрики
   const handleAddMetric = () => {
-    // При нажатии на "+" - добавить копию последней метрики
-    setMetricsFormData([...metricsFormData, metricsFormData[metricsFormData.length-1]])
-    setMetrics([...metrics, metrics[metrics.length-1]])
+    const simpleMetricsFD = metricsFormData.filter(metric => metric.expressionType === 'SIMPLE')
+    console.log("🚀 ~ metricsFormData:", metricsFormData)
+    console.log("🚀 ~ simpleMetricsFD:", simpleMetricsFD)
+    
+    setMetricsFormData([...metricsFormData, simpleMetricsFD[simpleMetricsFD.length-1]])
+    setMetrics([...metrics, simpleMetricsFD[simpleMetricsFD.length-1].label])
   }
+  // кнопка перезагрузки
   const handleReload = () => {
-    // кнопка перезагрузки
+    setMetricsFormData([...props.formData.metrics])
+    setDims([[...dimensions], [...groupbyColumns], [...groupbyRows]])
     setReload(!reload)
   }
   // колбэк для драг'н'дропа
   const handleDragEnd = (result) => {
+    console.log("🚀 ~ result:", result)
     const reorder = (list, startIndex, endIndex) => {
       const result = Array.from(list);
       const [removed] = result.splice(startIndex, 1);
@@ -211,7 +251,9 @@ export default function PivotTableC(props) {
     
     const move = (source, destination, droppableSource, droppableDestination) => {
       const sourceClone = Array.from(source);
+      console.log("🚀 ~ sourceClone:", sourceClone)
       const destClone = Array.from(destination);
+      console.log("🚀 ~ destClone:", destClone)
       const [removed] = sourceClone.splice(droppableSource.index, 1);
       
       destClone.splice(droppableDestination.index, 0, removed);
@@ -265,6 +307,8 @@ export default function PivotTableC(props) {
           classes={'dim-pool-big'}
           direction="horizontal"
           metricsAr={metrics}
+          type={'pool'}
+          dims={dims}
           />
         <div className='wrapper'>
           <div className='colss'>
@@ -282,13 +326,14 @@ export default function PivotTableC(props) {
                   metricsFormData={metricsFormData}
                   handleMetricsChange={handleMetricsChange}
                   handleAddMetric={handleAddMetric}
+                  warning={warning}
                 />}
                 trigger='click'
                 placement="bottomLeft"
               >
                 <Button block style={{ width: '8em', background: '#fbfbfb', border: '2px solid #c0c0c0' }}>Metrics</Button>
               </Popover>
-              <Button onClick={handleReload}>Reload</Button>
+              <Button onClick={handleReload}>Reset</Button>
             </div>
 
             <DimPool
@@ -297,6 +342,9 @@ export default function PivotTableC(props) {
               vertical={false}
               direction="horizontal"
               metricsAr={metrics}
+              type={'cols'}
+              dims={dims}
+              isMetricsInCols={isMetricsInCols}
             />
           </div>
 
@@ -306,6 +354,9 @@ export default function PivotTableC(props) {
               items={dims[2]}
               vertical={true}
               metricsAr={metrics}
+              type={'rows'}
+              dims={dims}
+              isMetricsInCols={isMetricsInCols}
             />
 
             <table id='t' className='table table-pvc'>

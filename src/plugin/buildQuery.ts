@@ -25,7 +25,8 @@ import {
 export default function buildQuery(formData: QueryFormData) {
   const { groupbyColumns=[], groupbyRows=[] } = formData;
   
-    return buildQueryContext(formData, (baseQueryObject: any) => {
+  const ctx = buildQueryContext(formData, baseQueryObject => {
+    
     const columns = Array.from(
       new Set([
         ...ensureIsArray(groupbyColumns),
@@ -41,9 +42,12 @@ export default function buildQuery(formData: QueryFormData) {
     })
     
     return [
-    {
-      ...baseQueryObject,
-      groupby: columns
-    },
-  ]});
+      {
+        ...baseQueryObject,
+        groupby: columns
+      },
+    ]
+  });
+  
+  return ctx
 }
