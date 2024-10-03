@@ -10,7 +10,6 @@ export const MetricSQL = (props) => {
     metrics
   } = props
   const handleDeleteButton = () => {
-    console.log('i is:', i)
     handleDelete(i)
   }
   

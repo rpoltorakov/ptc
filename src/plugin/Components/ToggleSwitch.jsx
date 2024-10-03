@@ -5,7 +5,6 @@ export default function ToggleSwitch() {
   const [switchState, setSwitchState] = useState(true);  
   
   function handleOnChange(e) {
-    console.log("---", e.target.checked);
     setSwitchState(!switchState);
   }
   

@@ -20,11 +20,6 @@ export const MetricSelect = ({
   
   React.useEffect(() => {
     if (metricsFormData[i].expressionType === 'SIMPLE') {
-      console.log(`
-        Changed metric ${i}:
-        agg: ${selectedAgg},
-      `)
-      console.log('field:', selectedField)
       handleMetricsChange(metricsFormData, i, selectedAgg, `\"${selectedField}\"`, selectedField);
     }
   }, [selectedAgg, selectedField])
