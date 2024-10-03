@@ -18,11 +18,11 @@ export const Metrics = ({
   handleAddMetric,
   warning
 }) => {
-  console.log("🚀 ~ metrics:", metrics)
-  // const sqlMetrics = metrics.slice(metricsFormData.filter(el => el.expressionType === 'SIMPLE').length)
-  const sqlMetrics = metrics.filter((el, i) => {})
-  console.log("🚀 ~ metricsFields:", metricsFields)
-  console.log("🚀 ~ sqlMetrics:", sqlMetrics)
+  const sqlMetricsFD = metricsFormData.filter(metric => metric.expressionType === 'SQL').map(el => el.label)
+  const sqlMetrics = metrics.filter(el => sqlMetricsFD.includes(el))
+
+  const simpleMetricsFD = metricsFormData.filter(metric => metric.expressionType === 'SIMPLE').map(el => el.label)
+  const simpleMetrics = metrics.filter(el => simpleMetricsFD.includes(el))
   return (
   <>
     <div
@@ -46,27 +46,33 @@ export const Metrics = ({
         </Tooltip>
       </div>
 
-      {metricsFields.map((metricField, i) => (
-        <MetricSelect 
-          metricsFields={metricsFields}
-          metricsAggs={metricsAggs}
-          metrics={metrics}
-          i={i}
-          key={i+'metrics'}
-          metricsFormData={metricsFormData}
-          handleMetricsChange={handleMetricsChange}
-          handleDelete={handleDelete}
-        />
-      ))}
-
-      {sqlMetrics.map((metric, i) => (
-        <MetricSQL 
-          metric={metric}
-          i={i + metricsFields.length}
-          key={i+'metricSQL'}
-          handleDelete={handleDelete}
-        />
-      ))}
+      {metricsFormData.map((metric, i) => {
+        if (metric.expressionType === 'SIMPLE') {
+          return (
+            <MetricSelect 
+              metric={metric}
+              metricsFields={metricsFields}
+              metricsAggs={metricsAggs}
+              metrics={metrics}
+              i={i}
+              key={i+'metrics'}
+              metricsFormData={metricsFormData}
+              handleMetricsChange={handleMetricsChange}
+              handleDelete={handleDelete}
+            />
+          )
+        } else if (metric.expressionType === 'SQL') {
+          return (
+            <MetricSQL 
+              key={i+'metricSQL'}
+              metric={metric}
+              i={i}
+              handleDelete={handleDelete}
+              metrics={metrics}
+            />
+          )
+        }
+      })}
 
       <Button
         type="primary"

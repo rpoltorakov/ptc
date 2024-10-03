@@ -11,7 +11,6 @@ import { Styles } from './plugin/Components/styles';
 import { collectMetrics, getSubtotalsDims, getUniqueValues } from './plugin/utils';
 
 export default function PivotTableC(props) {
-  // console.log("🚀 ~ props:", props)
   const { height, groupbyColumns, groupbyRows, dimensions } = props;
   const { subtotalsColsOn, subtotalsRowsOn } = props.formData
 
@@ -46,13 +45,8 @@ export default function PivotTableC(props) {
         ...metricsFormData[i],
         aggregate: agg,
         label: `${agg}(${field})`,
-        column: {
-          ...metricsFormData[i].column,
-          column_name: field
-        }
+        column: metricsFields.find(el => el.column_name === field)
       }
-      console.log("🚀 ~ newMetricsFD:", newMetricsFD)
-      console.log(collectMetrics(newMetricsFD, 'simple'))
       setMetricsFormData(newMetricsFD)
       setMetrics(collectMetrics(newMetricsFD, 'simple'))
     }
@@ -165,7 +159,6 @@ export default function PivotTableC(props) {
           groupbyColumns: cols[i], 
           groupbyRows: rows
         }
-        // delete newFormData.queries
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
         let difference = dims[1].filter(x => !cols[i].includes(x)); // разница между двумя массивами
   
@@ -188,12 +181,6 @@ export default function PivotTableC(props) {
   useEffect(() => {
     setWarning('')
     getNewData(formData, dims, metricsFormData)
-    console.log('------ metrics ------')
-    console.log('metricsFormData', metricsFormData)
-    console.log('metrics', metrics)
-    console.log('metricsFields', metricsFields)
-    console.log('metricsAggs', metricsAggs)
-    console.log('---------------------')
   }, [dims, metricsFormData, reload])
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
@@ -226,22 +213,19 @@ export default function PivotTableC(props) {
   }
   // При нажатии на "+" - добавить копию последней SIMPLE метрики
   const handleAddMetric = () => {
-    const simpleMetricsFD = metricsFormData.filter(metric => metric.expressionType === 'SIMPLE')
-    console.log("🚀 ~ metricsFormData:", metricsFormData)
-    console.log("🚀 ~ simpleMetricsFD:", simpleMetricsFD)
-    
+    const simpleMetricsFD = metricsFormData.filter(metric => metric.expressionType === 'SIMPLE')    
     setMetricsFormData([...metricsFormData, simpleMetricsFD[simpleMetricsFD.length-1]])
     setMetrics([...metrics, simpleMetricsFD[simpleMetricsFD.length-1].label])
   }
   // кнопка перезагрузки
   const handleReload = () => {
     setMetricsFormData([...props.formData.metrics])
+    setMetrics([...props.metrics])
     setDims([[...dimensions], [...groupbyColumns], [...groupbyRows]])
     setReload(!reload)
   }
   // колбэк для драг'н'дропа
   const handleDragEnd = (result) => {
-    console.log("🚀 ~ result:", result)
     const reorder = (list, startIndex, endIndex) => {
       const result = Array.from(list);
       const [removed] = result.splice(startIndex, 1);
@@ -251,9 +235,7 @@ export default function PivotTableC(props) {
     
     const move = (source, destination, droppableSource, droppableDestination) => {
       const sourceClone = Array.from(source);
-      console.log("🚀 ~ sourceClone:", sourceClone)
       const destClone = Array.from(destination);
-      console.log("🚀 ~ destClone:", destClone)
       const [removed] = sourceClone.splice(droppableSource.index, 1);
       
       destClone.splice(droppableDestination.index, 0, removed);

@@ -3,6 +3,7 @@ import { DownOutlined, SmileOutlined  } from '@ant-design/icons';
 import { Select, Space, Button } from 'antd';
 
 export const MetricSelect = ({
+  metric,
   metrics, 
   i, 
   metricsAggs, 
@@ -12,13 +13,18 @@ export const MetricSelect = ({
   handleDelete
 }) => {
   const aggs = metricsAggs.map(el => ({ value: el, label: el }))
-  const fields = metricsFields.map(el => ({ value: el, label: el }))
+  const fields = metricsFields.map(el => ({ value: el.column_name, label: el.column_name }))
 
-  const [selectedAgg, setSelectedAgg] = React.useState(metricsAggs[i])
-  const [selectedField, setSelectedField] = React.useState(metricsFields[i].column_name)
+  const [selectedAgg, setSelectedAgg] = React.useState(metric.aggregate)
+  const [selectedField, setSelectedField] = React.useState(metric.column.column_name)
   
   React.useEffect(() => {
     if (metricsFormData[i].expressionType === 'SIMPLE') {
+      console.log(`
+        Changed metric ${i}:
+        agg: ${selectedAgg},
+      `)
+      console.log('field:', selectedField)
       handleMetricsChange(metricsFormData, i, selectedAgg, `\"${selectedField}\"`, selectedField);
     }
   }, [selectedAgg, selectedField])
@@ -28,7 +34,7 @@ export const MetricSelect = ({
     setSelectedAgg(value)
   };
   const handleChangeField = (value) => {
-    setSelectedField(metricsFields.find(el => el.column.column_name === value))
+    setSelectedField(metricsFields.find(el => el.column_name === value).column_name)
   }
   const handleDeleteButton = () => {
     handleDelete(i)

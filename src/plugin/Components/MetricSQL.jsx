@@ -26,7 +26,7 @@ export const MetricSQL = (props) => {
           flexGrow: 1,
         }}
         >
-        {metric}
+        {metric.label}
       </div>
 
       <div style={{ marginLeft: '1em'}}>
