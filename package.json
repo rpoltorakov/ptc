@@ -1,6 +1,6 @@
 {
     "name": "pivot-table-enhanced",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Pivot Table Enhanced",
     "sideEffects": false,
     "main": "lib/index.js",
