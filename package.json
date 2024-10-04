@@ -43,9 +43,7 @@
         "npm-pack-all": "^1.12.7",
         "process": "^0.11.10",
         "react-draggable": "^4.4.6",
-        "react-sortablejs": "^6.1.4",
-        "react-switch": "^7.0.0",
-        "sortablejs": "^1.15.2"
+        "react-switch": "^7.0.0"
     },
     "bundledDependencies": [
         "@hello-pangea/dnd",
@@ -54,8 +52,15 @@
         "npm-pack-all",
         "process",
         "react-draggable",
-        "react-sortablejs",
-        "react-switch",
-        "sortablejs"
+        "react-switch"
+    ],
+    "bundleDependencies": [
+        "@hello-pangea/dnd",
+        "antd",
+        "immutability-helper",
+        "npm-pack-all",
+        "process",
+        "react-draggable",
+        "react-switch"
     ]
 }
