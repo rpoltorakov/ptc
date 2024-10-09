@@ -78,6 +78,8 @@ export default function transformProps(chartProps: ChartProps) {
         'AVG',
         'MIN',
         'MAX',
+        'COUNT_DISTINCT',
+        'SUMSQRD',
       ]
       additionalAggs.forEach((agg) => {
         if (!sqlAggs.includes(agg) && !sqlAggs.includes(agg + '(#)')) {

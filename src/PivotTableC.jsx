@@ -93,28 +93,54 @@ export default function PivotTableC(props) {
     const rows = getSubtotalsDims(dims[2])
     const subtotalDataPopulated = []
     
-    for (let i=0; i < rows.length; i++) {
-      const newFormData = {
-        ...formData,
-        metrics: metricsFormData,
-        groupbyColumns: cols,
-        groupbyRows: rows[i],
-        adhoc_filters: formData.adhocFilters,
-        extra_form_data: formData.extraFormData
+    for (let i=-1; i < rows.length; i++) {
+
+      if (i === -1) {
+        const newFormData = {
+          ...formData,
+          metrics: metricsFormData,
+          groupbyColumns: cols, // только строки
+          groupbyRows: [],
+          adhoc_filters: props.formData.adhocFilters,
+          extra_form_data: props.formData.extraFormData
+        }
+
+        const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+        let difference = rows[rows.length-1]
+  
+        // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
+        const populatedData = newData.map((el, i) => {
+          let res = {}
+          difference.forEach((diff) => {
+            res[diff] = 'subtotal'
+          })        
+          return {...el, ...res}
+        })
+
+        subtotalDataPopulated.push(...populatedData)
+      } else {
+        const newFormData = {
+          ...formData,
+          metrics: metricsFormData,
+          groupbyColumns: cols,
+          groupbyRows: rows[i],
+          adhoc_filters: props.formData.adhocFilters,
+          extra_form_data: props.formData.extraFormData
+        }
+  
+        const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
+        let difference = dims[2].filter(x => !rows[i].includes(x)); // разница между двумя массивами
+  
+        // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
+        const populatedData = newData.map((el, i) => {
+          let res = {}
+          difference.forEach((diff) => {
+            res[diff] = 'subtotal'
+          })        
+          return {...el, ...res}
+        })
+        subtotalDataPopulated.push(...populatedData)
       }
-
-      const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
-      let difference = dims[2].filter(x => !rows[i].includes(x)); // разница между двумя массивами
-
-      // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
-      const populatedData = newData.map((el, i) => {
-        let res = {}
-        difference.forEach((diff) => {
-          res[diff] = 'subtotal'
-        })        
-        return {...el, ...res}
-      })
-      subtotalDataPopulated.push(...populatedData)
     }
     return subtotalDataPopulated
   }  
@@ -132,8 +158,8 @@ export default function PivotTableC(props) {
           metrics: metricsFormData,
           groupbyColumns: [], // только строки
           groupbyRows: rows,
-          adhoc_filters: formData.adhocFilters,
-          extra_form_data: formData.extraFormData
+          adhoc_filters: props.formData.adhocFilters,
+          extra_form_data: props.formData.extraFormData
         }
 
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
@@ -157,7 +183,9 @@ export default function PivotTableC(props) {
           ...formData,
           metrics: metricsFormData,
           groupbyColumns: cols[i], 
-          groupbyRows: rows
+          groupbyRows: rows,
+          adhoc_filters: props.formData.adhocFilters,
+          extra_form_data: props.formData.extraFormData
         }
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
         let difference = dims[1].filter(x => !cols[i].includes(x)); // разница между двумя массивами
@@ -181,12 +209,12 @@ export default function PivotTableC(props) {
   useEffect(() => {
     setWarning('')
     getNewData(formData, dims, metricsFormData)
-  }, [dims, metricsFormData, reload])
+  }, [dims, metricsFormData, reload, props])
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal', true))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'subtotal', false))
-  }, [dims, data, metricsFormData, isMetricsInCols, reload])
+  }, [dims, data, metricsFormData, isMetricsInCols, reload, props])
   
   // Переключение метрик в строках/столбцах
   const handleMetricsSwitch = () => {

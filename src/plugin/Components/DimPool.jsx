@@ -26,7 +26,7 @@ export function DimPool(props) {
               return (
                 <Dim
                   name={el}
-                  key={el.toString()+i}
+                  key={props.id+el.toString()+i}
                   index={i}
                   metric={props.metrics ? true : false}
                   metrics={props.metricsAr}
