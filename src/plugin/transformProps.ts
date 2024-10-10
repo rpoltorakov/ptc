@@ -79,7 +79,7 @@ export default function transformProps(chartProps: ChartProps) {
         'MIN',
         'MAX',
         'COUNT_DISTINCT',
-        'SUMSQRD',
+        // 'SUMSQRD', - должны быть одинаковыми с superset/superset/connectors/sql/models.py -> class SqlaTable -> sqla_aggregations
       ]
       additionalAggs.forEach((agg) => {
         if (!sqlAggs.includes(agg) && !sqlAggs.includes(agg + '(#)')) {
