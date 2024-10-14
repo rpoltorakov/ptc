@@ -9,7 +9,13 @@ export const getUniqueValues = (
   dims.forEach((dim, i) => {
     const newAr = data.map((item) => {
       return item[dim] === undefined ? 'subtotal' : item[dim]
-    }).sort((a,b) => a-b).sort((a, b) => { // сортировка, чтоб subtotal всегда был последним
+    }).sort((a,b) => {
+      if (typeof a === 'string') {
+        return a.localeCompare(b)
+      } else {
+        return a-b
+      }
+    }).sort((a, b) => { // сортировка, чтоб subtotal всегда был последним
       if (b === 'subtotal') {return -1}
     })
     const unique = [...new Set(newAr)] // удаление дубликатов
@@ -32,18 +38,49 @@ export const getUniqueValues = (
   Проверка значения на null или undefined
 */
 export const renderValue = (value) => {
-  return value ? value : '\u00A0' // =nbsp
+  return value || value === 0 ? value : '\u00A0' // =nbsp
 }
 
 /*
   Получение размера span в зависимости от уровня вложенности
 */
-export const getDimSpan = (arr, level) => {
-  let remainder = arr.slice(level+1)
+export const getDimSpan = (arr, level, type, isSubtotalOn, value) => {
+  
+  // if (level === 0 && isSubtotalOn) {
+  //   console.log("🚀 ~ level:", level)
+  //   console.log("🚀 ~ arr:", arr)
+  //   console.log("🚀 ~ remainder:", arr.map(el => el.filter(item => item !== 'subtotal')).slice(level+1))
+  // }
+
+
+  let remainder = arr.slice(level+1) // все что справа
   if (!remainder) {
     return 1
   } else {
-    return remainder.reduce((acc, el) => {return acc*el.length}, 1)
+    let result = 0
+
+    // if (isSubtotalOn) {
+    //   const remainderWithoutSubtotal = arr.map(el => el.filter(item => item !== 'subtotal')).slice(level+1)
+    //   const resultWithoutSubtotal = remainderWithoutSubtotal.reduce((acc, el) => {return acc*el.length}, 1)
+    //   result = 
+    //   // строки как если бы сабтоталов не было + сабтотал на первое измерение справа
+    //     resultWithoutSubtotal + 1 + 
+    //   // если не последнее и не предпоследнее, то сабтотал на каждое значение первого измерения справа
+    //     level < arr.length-2 ? 1 + 2
+
+    // } else {
+      result = remainder.reduce((acc, el) => {return acc*el.length}, 1)
+  
+      // если есть сабтоталы
+      // if (arr.some(el => el.includes('subtotal')) && isSubtotalOn) {
+      //   if (type === 'rows') {
+      //     // нужно span уменьшить для всех уровней кроме последнего и предпоследнего
+      //     result
+      //   }
+      // }
+    // }
+
+    return result
   }
 }
 
@@ -71,6 +108,22 @@ export const getMultiplicators = (ar) => {
   }
 
   return result
+}
+
+/*
+  Поиск подмассива в массиве
+*/
+export const findSubArray = (arr, subarr, fromIndex) => {
+  var i = fromIndex >>> 0,
+      subarrLength = subarr.length,
+      l = arr.length + 1 - subarrLength;
+
+  loop: for (; i<l; i++) {
+    for (var j=0; j<subarrLength; j++)
+      if (arr[i+j] !== subarr[j]) continue loop;
+    return i;
+  }
+  return -1;
 }
 
 /*
@@ -141,25 +194,3 @@ export const getSubtotalsDims = (dims) => {
     return dims.slice(0, i+1)
   })
 }
-
-/*
-  Поиск подмассива в массиве
-*/
-export const findSubArray = (arr, subarr, from_index) => {
-  from_index = from_index || 0;
-
-  var i, found, j;
-  var last_check_index = arr.length - subarr.length;
-  var subarr_length = subarr.length;
-
-  position_loop:
-  for (i = from_index; i <= last_check_index; ++i) {
-      for (j = 0; j < subarr_length; ++j) {
-          if (arr[i + j] !== subarr[j]) {
-              continue position_loop;
-          }
-      }
-      return i;
-  }
-  return -1;
-};

@@ -25,6 +25,7 @@ export function DimPool(props) {
             {items ? items.map((el, i) => {
               return (
                 <Dim
+                  type={props.id === '0' ? 'pool' : props.id === '1' ? 'cols' : 'rows'}
                   name={el}
                   key={props.id+el.toString()+i}
                   index={i}

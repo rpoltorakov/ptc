@@ -108,17 +108,21 @@ export default function PivotTableC(props) {
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
         let difference = rows[rows.length-1]
   
-        // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
-        const populatedData = newData.map((el, i) => {
-          let res = {}
-          difference.forEach((diff) => {
-            res[diff] = 'subtotal'
-          })        
-          return {...el, ...res}
-        })
-
-        subtotalDataPopulated.push(...populatedData)
+        if (difference) {
+          // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
+          const populatedData = newData.map((el, i) => {
+            let res = {}
+            difference.forEach((diff) => {
+              res[diff] = 'subtotal'
+            })        
+            return {...el, ...res}
+          })
+          subtotalDataPopulated.push(...populatedData)
+        }
       } else {
+        if (rows.length === 1) {
+          continue
+        }
         const newFormData = {
           ...formData,
           metrics: metricsFormData,
@@ -164,17 +168,17 @@ export default function PivotTableC(props) {
 
         const newData = (await ApiV1.getChartData(buildQuery(newFormData))).result[0].data
         let difference = cols[cols.length-1]
-  
-        // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
-        const populatedData = newData.map((el, i) => {
-          let res = {}
-          difference.forEach((diff) => {
-            res[diff] = 'subtotal'
-          })        
-          return {...el, ...res}
-        })
-
-        subtotalDataPopulated.push(...populatedData)
+        if (difference) {
+          // добавление в массива данных измерений, которых нет (отсутствовали в groupby) - со значением 'subtotal'
+          const populatedData = newData.map((el, i) => {
+            let res = {}
+            difference.forEach((diff) => {
+              res[diff] = 'subtotal'
+            })        
+            return {...el, ...res}
+          })
+          subtotalDataPopulated.push(...populatedData)
+        }
       } else {
         if (cols.length === 1) {
           continue

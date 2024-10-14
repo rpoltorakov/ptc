@@ -4,7 +4,7 @@ import { Draggable } from '@hello-pangea/dnd'
 export function Dim(props) {
   return (
     <Draggable 
-      draggableId={props.name+props.index} 
+      draggableId={props.type+props.index}
       index={props.index} 
       isDragDisabled={props.isDragDisabled}
     >
