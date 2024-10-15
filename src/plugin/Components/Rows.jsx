@@ -113,6 +113,7 @@ export const Rows = ({
       }
     }
     
+    // замена 'rplc' на ближайшее сверху, операция обратная функции dedupMatrix
     dedupedMatrix.forEach((row, i) => {
       let rowClone = []
       if (row.includes('rplc')) {
@@ -133,11 +134,9 @@ export const Rows = ({
   }
 
   const rowsMatrix = cartesian(...rowsArr)
-  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
   
   const dedupedRowsMatrix = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
-  console.log("🚀 ~ result:", dedupedRowsMatrix)
 
   const rowSpanMap = createRowSpanMap(dedupedRowsMatrix)
   const rowsMatrixClean = createCleanDimsMatrix(dedupedRowsMatrix)
