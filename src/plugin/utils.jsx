@@ -45,41 +45,12 @@ export const renderValue = (value) => {
   Получение размера span в зависимости от уровня вложенности
 */
 export const getDimSpan = (arr, level, type, isSubtotalOn, value) => {
-  
-  // if (level === 0 && isSubtotalOn) {
-  //   console.log("🚀 ~ level:", level)
-  //   console.log("🚀 ~ arr:", arr)
-  //   console.log("🚀 ~ remainder:", arr.map(el => el.filter(item => item !== 'subtotal')).slice(level+1))
-  // }
-
-
   let remainder = arr.slice(level+1) // все что справа
   if (!remainder) {
     return 1
   } else {
     let result = 0
-
-    // if (isSubtotalOn) {
-    //   const remainderWithoutSubtotal = arr.map(el => el.filter(item => item !== 'subtotal')).slice(level+1)
-    //   const resultWithoutSubtotal = remainderWithoutSubtotal.reduce((acc, el) => {return acc*el.length}, 1)
-    //   result = 
-    //   // строки как если бы сабтоталов не было + сабтотал на первое измерение справа
-    //     resultWithoutSubtotal + 1 + 
-    //   // если не последнее и не предпоследнее, то сабтотал на каждое значение первого измерения справа
-    //     level < arr.length-2 ? 1 + 2
-
-    // } else {
-      result = remainder.reduce((acc, el) => {return acc*el.length}, 1)
-  
-      // если есть сабтоталы
-      // if (arr.some(el => el.includes('subtotal')) && isSubtotalOn) {
-      //   if (type === 'rows') {
-      //     // нужно span уменьшить для всех уровней кроме последнего и предпоследнего
-      //     result
-      //   }
-      // }
-    // }
-
+    result = remainder.reduce((acc, el) => {return acc*el.length}, 1)
     return result
   }
 }

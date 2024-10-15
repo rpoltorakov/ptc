@@ -10,83 +10,6 @@ export const ColumnHeaders = ({
   rowsArr,
   isMetricsInCols,
 }) => {
-  // const maxLevel = isMetricsInCols ? colsArr.length-2 : colsArr.length-1
-  // const getDimsHier = (colsArr) => {
-  //   let indicators = colsArr
-  //   // let result = []
-  //   let results = []
-  //   function recur(level) {
-  //     if (level === indicators.length) {
-  //       return
-  //     }
-  //     let length = indicators[level].length;
-  //     for (let i = 0; i < length; i++) {
-  //       // result.push(indicators[level][i]);
-  //       results.push({level: level, value: indicators[level][i], toBeDeleted: false})
-  //       recur(level + 1)
-  //     }
-  //   }
-  //   recur(0)
-  //   // console.log('1', JSON.parse(JSON.stringify(results)))
-  //   function metricAllowedForDeletion(i) {
-  //     if (isMetricsInCols && results[i].level === colsArr.length-1) {
-  //       if (results[i-1].toBeDeleted === true) {
-  //         return true
-  //       }
-  //     }
-  //   }
-  //   function markChildrenForDeletion(i) {
-  //     let tmp = i
-  //     let currentLevel = results[i].level
-      
-  //     while (results[tmp+1] && results[tmp+1].level > currentLevel) {
-  //       const currentElement = results[tmp]
-  //       const nextElement = results[tmp+1]
-        
-  //       if (nextElement.value !== 'subtotal' && metricAllowedForDeletion(tmp+1)) {
-  //         nextElement.toBeDeleted = true
-  //       }
-  //       tmp++
-  //     }
-  //   }
-    
-  //   for (let i = 0; i < results.length-1; i++) {
-  //     if (results[i].value === 'subtotal' && results[i+1].level >= results[i].level) {
-  //       markChildrenForDeletion(i)
-  //     }
-  //   }
-  //   // console.log('2', JSON.parse(JSON.stringify(results)))
-  //   results = results.filter(el => !el.toBeDeleted)
-    
-  //   for (let i = 0; i < results.length-1; i++) {
-  //     const currentElement = results[i]
-  //     const nextElement = results[i+1]
-  //     if (currentElement.value === 'subtotal' && nextElement.value === 'subtotal') {
-  //       // если разница положительная и больше одного - нужно удалить элемент
-  //       if ((nextElement.level - currentElement.level) > 1 || (nextElement.level - currentElement.level) === 0) {
-  //         nextElement.toBeDeleted = true
-  //       }
-  //     }
-  //   }
-  //   // console.log('3', JSON.parse(JSON.stringify(results)))
-  //   results = results.filter(el => !el.toBeDeleted)
-    
-  //   return results
-  // }
-  // const colsHier = getDimsHier(colsArr)
-  // function getColsDim(el, k) {
-  //   if (el.value === 'subtotal') {
-  //     return 1
-  //   } 
-  //   if (el.level === maxLevel) {
-  //     return 1
-  //   }
-  //   const j = colsHier.indexOf(el)
-  //   const end = colsHier.slice(j+1).find(item => item.level <= el.level)
-  //   let slicedColsHier = colsHier.slice(j, colsHier.indexOf(end)).filter(item => item.level === maxLevel)
-  //   return slicedColsHier.length
-  // }
-
   const cartesian = (...a) => {
     if (a.length === 1) {
       return a[0].map(e => [e])
@@ -195,7 +118,6 @@ export const ColumnHeaders = ({
   const dedupedColsMatrix = dedupMatrix(colsMatrix, getMultiplicators(colsArr))
   const colSpanMap = createRowSpanMap(dedupedColsMatrix)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
-  console.log("🚀 ~ colsMatrixClean:", colsMatrixClean)
   
   return colsArr.map((colsRow, i) => {
     return (

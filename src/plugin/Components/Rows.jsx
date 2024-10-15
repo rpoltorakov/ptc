@@ -188,9 +188,7 @@ export const Rows = ({
   const rowSpanMap = createRowSpanMap(dedupedRowsMatrix)
   
   const rowsMatrixClean = createCleanDimsMatrix(dedupedRowsMatrix)
-  console.log("🚀 ~ rowsMatrixClean:", rowsMatrixClean)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
-  console.log("🚀 ~ colsMatrixClean:", colsMatrixClean)
   
   const dataRows = dedupedRowsMatrix.map((row, i) => {
     return colsMatrixClean.map((col, k) => {
@@ -198,8 +196,6 @@ export const Rows = ({
       return value
     })
   })
-  console.log("🚀 ~ dataRows:", dataRows)
-
   return (
     <>
       {dedupedRowsMatrix.map((row, i) => (
