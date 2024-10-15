@@ -133,13 +133,31 @@ export const Rows = ({
     return result
   }
 
+  const getSubtotalColSpan = (i, j, row) => {
+    console.log('--------------')
+    console.log("🚀 ~ i, j, row:", i, j, row)
+    
+    let colSpan = 0
+    while (colSpan < row.length-1 && row[j+colSpan] === 'subtotal') {
+      colSpan++
+      // j++
+      console.log('colSpan increased:', colSpan)
+    }
+    console.log('colSpan:', colSpan)
+    return colSpan
+  }
+
   const rowsMatrix = cartesian(...rowsArr)
+  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
   
   const dedupedRowsMatrix = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
+  console.log("🚀 ~ dedupedRowsMatrix:", dedupedRowsMatrix)
 
   const rowSpanMap = createRowSpanMap(dedupedRowsMatrix)
+  console.log("🚀 ~ rowSpanMap:", rowSpanMap)
   const rowsMatrixClean = createCleanDimsMatrix(dedupedRowsMatrix)
+  console.log("🚀 ~ rowsMatrixClean:", rowsMatrixClean)
 
   const dataRows = dedupedRowsMatrix.map((row, i) => {
     return colsMatrix.map((col, k) => {
@@ -155,17 +173,21 @@ export const Rows = ({
           { // заголовки в строках
             row.map((el, j) => (
               // если елемент существует - возвращаем ячейку
-               el !== 'rplc'  ?
+               el !== 'rplc' && (j !== 0 && j < row.length-1 ? row[j-1] : true) !== 'subtotal'  ?
                 <td
                   className={`td header ${row.includes('subtotal') ? 'tdv-total' : ''}`}
                   key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
                   rowSpan={rowSpanMap[i][j]}
+                  colSpan={el === 'subtotal' ? getSubtotalColSpan(i, j, row) : 0}
                 >
                   {renderValue(el)}
                 </td> 
-                : // если нет: 'rplc' - для объединения ячеек --> что бы объединить ставим null, 
-                  // '\u00A0' (non-breaking space) как значение измерения (не должны до сюда доходить)
-                (el === 'rplc') ? null : '\u00A0'
+                : // иначе: по метке 'rplc' - возвращаем null, что бы объединить ячейки 
+                (el === 'rplc') ? null : 
+                // иначе: subtotal который дошел до сюда - не первый subtotal в строке - нужно объединить
+                (el === 'subtotal') ? null : 
+                // иначе: '\u00A0' (non-breaking space) как значение измерения (не должно до сюда доходить, тут как индикатор ошибки)
+                '\u00A0'
             ))
           }
 

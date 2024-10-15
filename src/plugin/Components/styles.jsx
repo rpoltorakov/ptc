@@ -68,6 +68,7 @@ export const Styles = styled.div<PivotTableCStylesProps>`
   .dim-pool-big {
     margin-bottom: 1em;
     min-height: 4em;
+    width: auto;
   }
 
   .dim-elem {
