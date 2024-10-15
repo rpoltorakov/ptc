@@ -148,8 +148,6 @@ export const Rows = ({
     })
   })
 
-  console.log("🚀 ~ dataRows:", dataRows)
-
   return (
     <>
       {dedupedRowsMatrix.map((row, i) => (
