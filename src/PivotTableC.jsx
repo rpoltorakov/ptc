@@ -379,6 +379,7 @@ export default function PivotTableC(props) {
                   colsArr={colsAr}
                   rowsArr={rowsAr}
                   reload={reload}
+                  isMetricsInCols={isMetricsInCols}
                 />
               </thead>
               <tbody>

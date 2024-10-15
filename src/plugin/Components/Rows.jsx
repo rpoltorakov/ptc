@@ -41,7 +41,7 @@ export const Rows = ({
         if (row.includes('subtotal')) {
           let toBeDeleted = false
 
-          for (let j = 0; j < row.length-2; j++) {
+          for (let j = 0; j < row.length-(isMetricsInCols ? 1 : 2); j++) {
             if (row[j] === 'subtotal' && row[j+1] !== 'subtotal') {
               toBeDeleted = true
             }
@@ -55,7 +55,45 @@ export const Rows = ({
     }
     return result
   }
+  // удаление дубликатов в столбцах
+  const dedupMatrixCols = (colsMatrix, multiplicators) => {
+    let result = []
+    let bufferArray = [];
+    colsMatrix.forEach((row, i) => {
+      row.forEach((cell, k) => {
+        if (i % multiplicators[k] === 0) {
+          bufferArray.push(cell)
+        } else {
+          bufferArray.push(cell === 'subtotal' ? 'subtotal':'rplc') // 'rplc' - метка что ячейки нужно объединить (span=0)
+        }
+      })
+      
+      result.push(bufferArray)
+      bufferArray = []
+    });
 
+    // если есть сабтоталы - нужно удалить ячейки, детализирующие сабтотал 
+    // (пример: есть subtotal-moscow, subtotal-stP, subtotal-subtotal, 
+    // нужно оставить только subtotal-subtotal)
+    if (colsArr.some(el => el.includes('subtotal'))) {
+      result.forEach((row, i) => {
+        if (row.includes('subtotal')) {
+          let toBeDeleted = false
+
+          for (let j = 0; j < row.length- (isMetricsInCols ? 2 : 1); j++) {
+            if (row[j] === 'subtotal' && row[j+1] !== 'subtotal') {
+              toBeDeleted = true
+            }
+          }
+          if (toBeDeleted) {
+            result[i] = 'deleteMe'
+          }
+        }
+      })
+      result = result.filter(el => el !== 'deleteMe')
+    }
+    return result
+  }
   // поиск метрик
   const findDataCell = (data, colDims, rowDims, isMetricsInCols, dims) => {
     const colsParsed = isMetricsInCols ? colDims.slice(0, -1) : colDims
@@ -134,37 +172,33 @@ export const Rows = ({
   }
 
   const getSubtotalColSpan = (i, j, row) => {
-    console.log('--------------')
-    console.log("🚀 ~ i, j, row:", i, j, row)
-    
     let colSpan = 0
-    while (colSpan < row.length-1 && row[j+colSpan] === 'subtotal') {
+    while (colSpan < row.length-(!isMetricsInCols ? 1 : 0) && row[j+colSpan] === 'subtotal') {
       colSpan++
-      // j++
-      console.log('colSpan increased:', colSpan)
     }
-    console.log('colSpan:', colSpan)
     return colSpan
   }
 
   const rowsMatrix = cartesian(...rowsArr)
-  console.log("🚀 ~ rowsMatrix:", rowsMatrix)
   const colsMatrix = cartesian(...colsArr)
   
   const dedupedRowsMatrix = dedupMatrix(rowsMatrix, getMultiplicators(rowsArr)) // матрица для строк
-  console.log("🚀 ~ dedupedRowsMatrix:", dedupedRowsMatrix)
-
+  const dedupedColsMatrix = dedupMatrixCols(colsMatrix, getMultiplicators(colsArr)) // матрица для столбцов
+  
   const rowSpanMap = createRowSpanMap(dedupedRowsMatrix)
-  console.log("🚀 ~ rowSpanMap:", rowSpanMap)
+  
   const rowsMatrixClean = createCleanDimsMatrix(dedupedRowsMatrix)
   console.log("🚀 ~ rowsMatrixClean:", rowsMatrixClean)
-
+  const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
+  console.log("🚀 ~ colsMatrixClean:", colsMatrixClean)
+  
   const dataRows = dedupedRowsMatrix.map((row, i) => {
-    return colsMatrix.map((col, k) => {
+    return colsMatrixClean.map((col, k) => {
       const value = findDataCell(data, col, rowsMatrixClean[i], isMetricsInCols, dims)
       return value
     })
   })
+  console.log("🚀 ~ dataRows:", dataRows)
 
   return (
     <>
@@ -173,7 +207,8 @@ export const Rows = ({
           { // заголовки в строках
             row.map((el, j) => (
               // если елемент существует - возвращаем ячейку
-               el !== 'rplc' && (j !== 0 && j < row.length-1 ? row[j-1] : true) !== 'subtotal'  ?
+               el !== 'rplc' && 
+               (j !== 0 && j < row.length-(!isMetricsInCols ? 1 : 0) ? row[j-1] : true) !== 'subtotal'  ?
                 <td
                   className={`td header ${row.includes('subtotal') ? 'tdv-total' : ''}`}
                   key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
