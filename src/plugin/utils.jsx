@@ -5,7 +5,6 @@
 export const getUniqueValues = (
   data, dims, isMetricsInCols, metrics, subtotalsOn
 ) => {
-  // setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal', true))
   let uniqueCols = []
   dims.forEach((dim, i) => {
 
@@ -35,8 +34,11 @@ export const getUniqueValues = (
     }
 
     const unique = [...new Set(newAr)] // удаление дубликатов
+    console.log("🚀 ~ unique:", i, unique)
 
-    if (unique.length === 1 && unique[0] !== undefined && typeof unique[0] !== 'object') {
+    if (unique.length === 1 && unique[0] !== undefined &&  unique[0] !== 'subtotal') {
+      console.log("🚀 ~ unique ternar, we are here with:", unique)
+      
       uniqueCols.push(unique ? [unique] : ['null']) // вернуть нужно массив массивов
       return 
     }
@@ -76,7 +78,7 @@ export const getDimSpanSubtotalRow = (arr, level) => {
 }
 
 /*
-  Вспомогательная функция для алгоритмов построения колонок/столбцов
+  Функция расчета количества повторений измерений в матрице
 */
 export const getMultiplicators = (ar) => {
   const lenArr = ar.map(el => el.length)

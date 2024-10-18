@@ -9,6 +9,7 @@ export const ColumnHeaders = ({
   colsArr,
   rowsArr,
   isMetricsInCols,
+  dims
 }) => {
   const cartesian = (...a) => {
     if (a.length === 1) {
@@ -69,22 +70,15 @@ export const ColumnHeaders = ({
         if (dedupedMatrix[i][j] === 'rplc') {
           buff.push(0)
         } else {
-          // записывается расстояние до следующего не-'rplc' элемента
-          console.log('i, j', i, j)
           const foundIndex = dedupedMatrix.slice(i+1).findIndex((el, k) => {
             // if (k === dedupedMatrix.slice(i+1).length-1) {
             //   return true
             // }
             return el[j] !== 'rplc'
           })
-          console.log(
-            "dedupedMatrix.slice(i+1).findIndex((el, k) => el[j] !== 'rplc') + 1", 
-            dedupedMatrix.slice(i+1),
-            foundIndex,
-            foundIndex === -1 ? dedupedMatrix.slice(i+1).length+1 : foundIndex+1
-          )
-          
-          buff.push( dedupedMatrix.slice(i+1).findIndex((el, k) => el[j] !== 'rplc') + 1 ) // +1 т.к. слайсили
+          // Записываем расстояние до следующего не-'rplc' элемента, если такого нет - значит конец матрицы 
+          // => объединять нужно до конца 
+          buff.push( foundIndex === -1 ? dedupedMatrix.slice(i+1).length+1 : foundIndex+1 ) // +1 т.к. слайсили
         }
       }
       result.push(buff)
@@ -93,36 +87,42 @@ export const ColumnHeaders = ({
   }
 
   const createCleanDimsMatrix = (dedupedMatrix) => {
-    let result = []
-    
-    // рекурсивная функция поиск ближайшего сверху
-    function getFirstNonRplc(arr, i, j) {
+    try {
+      let result = []
       
-      if (arr[i][j] !== 'rplc') {
-        return arr[i][j]
-      } else {
-        return getFirstNonRplc(arr, i-1, j)
+      // рекурсивная функция поиск ближайшего сверху
+      function getFirstNonRplc(arr, i, j) {
+        
+        if (arr[i][j] !== 'rplc') {
+          return arr[i][j]
+        } else {
+          return getFirstNonRplc(arr, i-1, j)
+        }
       }
+      
+      // замена 'rplc' на ближайшее сверху, операция обратная функции dedupMatrix
+      dedupedMatrix.forEach((row, i) => {
+        let rowClone = []
+        if (row.includes('rplc')) {
+          rowClone = row.map((el, j) => {
+            if (el === 'rplc') {
+              return getFirstNonRplc(dedupedMatrix, i, j)
+            } else {
+              return el
+            }
+          })
+        } else {
+          rowClone = row
+        }
+        result.push(rowClone)
+      })
+  
+      return result
+
+    } catch (e) {
+      console.error(e)
     }
     
-    // замена 'rplc' на ближайшее сверху, операция обратная функции dedupMatrix
-    dedupedMatrix.forEach((row, i) => {
-      let rowClone = []
-      if (row.includes('rplc')) {
-        rowClone = row.map((el, j) => {
-          if (el === 'rplc') {
-            return getFirstNonRplc(dedupedMatrix, i, j)
-          } else {
-            return el
-          }
-        })
-      } else {
-        rowClone = row
-      }
-      result.push(rowClone)
-    })
-
-    return result
   }
 
   const getSubtotalRowSpan = (row) => {
@@ -131,10 +131,11 @@ export const ColumnHeaders = ({
 
   const colsMatrix = cartesian(...colsArr)
   console.log("🚀 ~ colsMatrix:", colsMatrix)
+  console.log("🚀 ~ colsMatrix dims:", dims)
+  console.log("🚀 ~ getMultiplicators(colsArr):", getMultiplicators(colsArr))
   const dedupedColsMatrix = dedupMatrix(colsMatrix, getMultiplicators(colsArr))
   console.log("🚀 ~ dedupedColsMatrix:", dedupedColsMatrix)
   const colSpanMap = createColSpanMap(dedupedColsMatrix)
-  console.log("🚀 ~ colSpanMap:", colSpanMap)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
   console.log("🚀 ~ colsMatrixClean:", colsMatrixClean)
   
@@ -161,7 +162,7 @@ export const ColumnHeaders = ({
               dedupedColsMatrix[j][i-1] : true) !== 'subtotal'  ? 
               (<td
                 key={element+j}
-                className={`td header ${colsMatrixClean[j].includes('subtotal') ? 'tdv-total' : ''}`}
+                className={`td header ${colsMatrixClean && colsMatrixClean[j]?.includes('subtotal') ? 'tdv-total' : ''}`}
                 colSpan={span}
                 rowSpan={el[i] === 'subtotal' ? getSubtotalRowSpan(el) : 1}
               >

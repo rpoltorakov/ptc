@@ -55,22 +55,46 @@ export default function PivotTableC(props) {
   // Функция получения данных
   async function getNewData(formData, dims, metricsFormData)  {
     const data = []
-    // данные без сабтоталов
-    const dataNoSubtotals = await getDataNoSubtotals(formData, dims, metricsFormData)
-    data.push(...dataNoSubtotals)
-
-    if (subtotalsRowsOn) {
+    if (!subtotalsColsOn && !subtotalsRowsOn) {
+      // данные без сабтоталов
+      const dataNoSubtotals = await getDataNoSubtotals(formData, dims, metricsFormData)
+      data.push(...dataNoSubtotals)
+      setData([...data])
+    } else 
+    
+    if (subtotalsColsOn && !subtotalsRowsOn) {
+      // данные без сабтоталов
+      const dataNoSubtotals = await getDataNoSubtotals(formData, dims, metricsFormData)
+      data.push(...dataNoSubtotals)
       // добавить сабтоталы строк
       const subtotalsDataRows = await getSubtotalsDataRows(props.formData, dims, metricsFormData)
-      data.push(...subtotalsDataRows)  
-    }
-
-    if (subtotalsColsOn) {
+      data.push(...subtotalsDataRows)
+      setData([...data])  
+    } else
+    
+    if (!subtotalsColsOn && subtotalsRowsOn) {
+      // данные без сабтоталов
+      const dataNoSubtotals = await getDataNoSubtotals(formData, dims, metricsFormData)
+      data.push(...dataNoSubtotals)
       // добавить сабтоталы колонок
       const subtotalsDataCols = await getSubtotalsDataCols(props.formData, dims, metricsFormData)
       data.push(...subtotalsDataCols)
+      setData([...data])
+    } else
+    
+    if (subtotalsColsOn && subtotalsRowsOn) {
+      // данные без сабтоталов
+      const dataNoSubtotals = await getDataNoSubtotals(formData, dims, metricsFormData)
+      data.push(...dataNoSubtotals)
+      // добавить сабтоталы строк
+      const subtotalsDataRows = await getSubtotalsDataRows(props.formData, dims, metricsFormData)
+      data.push(...subtotalsDataRows)
+      // добавить сабтоталы колонок
+      const subtotalsDataCols = await getSubtotalsDataCols(props.formData, dims, metricsFormData)
+      data.push(...subtotalsDataCols)
+      setData([...data])
     }
-    setData([...data])
+    // setData([...data])
   }
    
   // Функция получения данных без сабтоталов
@@ -216,7 +240,7 @@ export default function PivotTableC(props) {
   }, [dims, metricsFormData, reload, props])
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
-    console.log(`🚀 ~ uniqueColscols:`, dims[1])
+    console.log(`🚀 ~ uniqueColscols:`, dims[1], data, getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn))
     setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn))
     setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn))
   }, [dims, data, metricsFormData, isMetricsInCols, reload, props])
@@ -381,6 +405,7 @@ export default function PivotTableC(props) {
                   rowsArr={rowsAr}
                   reload={reload}
                   isMetricsInCols={isMetricsInCols}
+                  dims={dims}
                 />
               </thead>
               <tbody>

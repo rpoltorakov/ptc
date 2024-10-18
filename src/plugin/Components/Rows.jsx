@@ -8,6 +8,7 @@ export const Rows = ({
     dims,
     isMetricsInCols
   }) => {
+    try {
   const cartesian = (...a) => {
     if (a.length === 1) {
       return a[0].map(e => [e])
@@ -140,35 +141,39 @@ export const Rows = ({
   }
 
   const createCleanDimsMatrix = (dedupedMatrix) => {
-    let result = []
-    
-    // рекурсивная функция поиск ближайшего сверху
-    function getFirstNonRplc(arr, i, j) {
-      if (arr[i][j] !== 'rplc') {
-        return arr[i][j]
-      } else {
-        return getFirstNonRplc(arr, i-1, j)
+    try {
+      let result = []
+      
+      // рекурсивная функция поиск ближайшего сверху
+      function getFirstNonRplc(arr, i, j) {
+        if (arr[i][j] !== 'rplc') {
+          return arr[i][j]
+        } else {
+          return getFirstNonRplc(arr, i-1, j)
+        }
       }
-    }
-    
-    // замена 'rplc' на ближайшее сверху, операция обратная функции dedupMatrix
-    dedupedMatrix.forEach((row, i) => {
-      let rowClone = []
-      if (row.includes('rplc')) {
-        rowClone = row.map((el, j) => {
-          if (el === 'rplc') {
-            return getFirstNonRplc(dedupedMatrix, i, j)
-          } else {
-            return el
-          }
-        })
-      } else {
-        rowClone = row
-      }
-      result.push(rowClone)
-    })
+      
+      // замена 'rplc' на ближайшее сверху, операция обратная функции dedupMatrix
+      dedupedMatrix.forEach((row, i) => {
+        let rowClone = []
+        if (row.includes('rplc')) {
+          rowClone = row.map((el, j) => {
+            if (el === 'rplc') {
+              return getFirstNonRplc(dedupedMatrix, i, j)
+            } else {
+              return el
+            }
+          })
+        } else {
+          rowClone = row
+        }
+        result.push(rowClone)
+      })
 
-    return result
+      return result
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const getSubtotalColSpan = (i, j, row) => {
@@ -186,7 +191,6 @@ export const Rows = ({
   const dedupedColsMatrix = dedupMatrixCols(colsMatrix, getMultiplicators(colsArr)) // матрица для столбцов
   
   const rowSpanMap = createRowSpanMap(dedupedRowsMatrix)
-  console.log("🚀 ~ rowSpanMap:", rowSpanMap)
   
   const rowsMatrixClean = createCleanDimsMatrix(dedupedRowsMatrix)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
@@ -236,4 +240,7 @@ export const Rows = ({
       ))}
     </>
   )
+} catch (e) {
+  return <></>
+}
 }
