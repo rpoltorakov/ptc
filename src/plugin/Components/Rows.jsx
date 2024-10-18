@@ -186,6 +186,7 @@ export const Rows = ({
   const dedupedColsMatrix = dedupMatrixCols(colsMatrix, getMultiplicators(colsArr)) // матрица для столбцов
   
   const rowSpanMap = createRowSpanMap(dedupedRowsMatrix)
+  console.log("🚀 ~ rowSpanMap:", rowSpanMap)
   
   const rowsMatrixClean = createCleanDimsMatrix(dedupedRowsMatrix)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
@@ -204,15 +205,16 @@ export const Rows = ({
             row.map((el, j) => (
               // если елемент существует - возвращаем ячейку
                el !== 'rplc' && 
-               (j !== 0 && j < row.length-(!isMetricsInCols ? 1 : 0) ? row[j-1] : true) !== 'subtotal'  ?
-                <td
+               (j !== 0 && j < row.length-(!isMetricsInCols ? 1 : 0) ? 
+               row[j-1] : true) !== 'subtotal'  ?
+                (<td
                   className={`td header ${row.includes('subtotal') ? 'tdv-total' : ''}`}
                   key={el ? el.toString()+j.toString()+'header' : 'null'+j.toString()+'header'}
                   rowSpan={rowSpanMap[i][j]}
                   colSpan={el === 'subtotal' ? getSubtotalColSpan(i, j, row) : 0}
                 >
                   {renderValue(el)}
-                </td> 
+                </td>)
                 : // иначе: по метке 'rplc' - возвращаем null, что бы объединить ячейки 
                 (el === 'rplc') ? null : 
                 // иначе: subtotal который дошел до сюда - не первый subtotal в строке - нужно объединить

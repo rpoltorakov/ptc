@@ -3,25 +3,41 @@
   из массива данных
 */
 export const getUniqueValues = (
-  data, dims, isMetricsInCols, metrics, subtotalsOn, extra, forCols
-) => {  
+  data, dims, isMetricsInCols, metrics, subtotalsOn
+) => {
+  // setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal', true))
   let uniqueCols = []
   dims.forEach((dim, i) => {
-    const newAr = data.map((item) => {
-      return item[dim] === undefined ? 'subtotal' : item[dim]
-    }).sort((a,b) => {
-      if (typeof a === 'string') {
-        return a.localeCompare(b)
+
+    let newAr = data.map((item) => {
+      if (subtotalsOn) {
+        return item[dim] === undefined ? 'subtotal' : item[dim]
       } else {
+        if (item[dim]) {
+          return item[dim]
+        }
+      }
+    }).sort((a,b) => {
+      if (typeof a === 'string') { // строки по алфавиту
+        return a.localeCompare(b)
+      } else { // все остальное (числа/даты) по возрастанию
         return a-b
       }
     }).sort((a, b) => { // сортировка, чтоб subtotal всегда был последним
       if (b === 'subtotal') {return -1}
     })
+
+    if (!subtotalsOn) {
+      newAr = newAr.filter(el => el !== undefined)
+      if (newAr.length === 0) {
+        return
+      }
+    }
+
     const unique = [...new Set(newAr)] // удаление дубликатов
 
-    if (unique.length === 1 && unique[0] !== undefined) {
-      uniqueCols.push(unique ? [unique] : ['null']) // если столбец один - нужно положить его как unique=[[values]], иначе будет unique=[values]
+    if (unique.length === 1 && unique[0] !== undefined && typeof unique[0] !== 'object') {
+      uniqueCols.push(unique ? [unique] : ['null']) // вернуть нужно массив массивов
       return 
     }
     uniqueCols.push(unique ? unique : 'null')

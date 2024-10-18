@@ -27,10 +27,10 @@ export default function PivotTableC(props) {
   const [formData, setFormData] = React.useState(props.formData);
   const [warning, setWarning] = React.useState(false);
   const [colsAr, setColsAr] = React.useState(
-    getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics)
+    getUniqueValues(data, props.groupbyColumns, isMetricsInCols, props.metrics, subtotalsColsOn)
   )
   const [rowsAr, setRowsAr] = React.useState(
-    getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics)
+    getUniqueValues(data, props.groupbyRows, !isMetricsInCols, props.metrics, subtotalsRowsOn)
   )
   const [metricsFormData, setMetricsFormData] = React.useState([...props.formData.metrics])
   
@@ -216,8 +216,9 @@ export default function PivotTableC(props) {
   }, [dims, metricsFormData, reload, props])
   // на изменение данных - изменить колонки/строки
   useEffect(() => {
-    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn, 'subtotal', true))
-    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn, 'subtotal', false))
+    console.log(`🚀 ~ uniqueColscols:`, dims[1])
+    setColsAr(getUniqueValues(data, [...dims[1]], isMetricsInCols, metrics, subtotalsColsOn))
+    setRowsAr(getUniqueValues(data, [...dims[2]], !isMetricsInCols, metrics, subtotalsRowsOn))
   }, [dims, data, metricsFormData, isMetricsInCols, reload, props])
   
   // Переключение метрик в строках/столбцах

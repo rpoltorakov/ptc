@@ -59,7 +59,7 @@ export const ColumnHeaders = ({
   }
 
   // создание матрицы span'ов
-  const createRowSpanMap = (dedupedMatrix) => {
+  const createColSpanMap = (dedupedMatrix) => {
     let result = []
     // сверху вниз
     for (let i = 0; i < dedupedMatrix.length; i++) {
@@ -69,7 +69,22 @@ export const ColumnHeaders = ({
         if (dedupedMatrix[i][j] === 'rplc') {
           buff.push(0)
         } else {
-          buff.push(dedupedMatrix.slice(i+1).findIndex((el, k) => el[j] !== 'rplc') + 1) // +1 т.к. слайсили
+          // записывается расстояние до следующего не-'rplc' элемента
+          console.log('i, j', i, j)
+          const foundIndex = dedupedMatrix.slice(i+1).findIndex((el, k) => {
+            // if (k === dedupedMatrix.slice(i+1).length-1) {
+            //   return true
+            // }
+            return el[j] !== 'rplc'
+          })
+          console.log(
+            "dedupedMatrix.slice(i+1).findIndex((el, k) => el[j] !== 'rplc') + 1", 
+            dedupedMatrix.slice(i+1),
+            foundIndex,
+            foundIndex === -1 ? dedupedMatrix.slice(i+1).length+1 : foundIndex+1
+          )
+          
+          buff.push( dedupedMatrix.slice(i+1).findIndex((el, k) => el[j] !== 'rplc') + 1 ) // +1 т.к. слайсили
         }
       }
       result.push(buff)
@@ -82,6 +97,7 @@ export const ColumnHeaders = ({
     
     // рекурсивная функция поиск ближайшего сверху
     function getFirstNonRplc(arr, i, j) {
+      
       if (arr[i][j] !== 'rplc') {
         return arr[i][j]
       } else {
@@ -113,11 +129,14 @@ export const ColumnHeaders = ({
     return row.filter(el => el === 'subtotal').length
   }
 
-
   const colsMatrix = cartesian(...colsArr)
+  console.log("🚀 ~ colsMatrix:", colsMatrix)
   const dedupedColsMatrix = dedupMatrix(colsMatrix, getMultiplicators(colsArr))
-  const colSpanMap = createRowSpanMap(dedupedColsMatrix)
+  console.log("🚀 ~ dedupedColsMatrix:", dedupedColsMatrix)
+  const colSpanMap = createColSpanMap(dedupedColsMatrix)
+  console.log("🚀 ~ colSpanMap:", colSpanMap)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
+  console.log("🚀 ~ colsMatrixClean:", colsMatrixClean)
   
   return colsArr.map((colsRow, i) => {
     return (
@@ -138,7 +157,9 @@ export const ColumnHeaders = ({
 
             return (
               element !== 'rplc' && 
-              (i !== 0 && i < colsArr.length-(isMetricsInCols ? 1 : 0) ? dedupedColsMatrix[j][i-1] : true) !== 'subtotal'  ? (<td
+              (i !== 0 && i < colsArr.length-(isMetricsInCols ? 1 : 0) ? 
+              dedupedColsMatrix[j][i-1] : true) !== 'subtotal'  ? 
+              (<td
                 key={element+j}
                 className={`td header ${colsMatrixClean[j].includes('subtotal') ? 'tdv-total' : ''}`}
                 colSpan={span}
