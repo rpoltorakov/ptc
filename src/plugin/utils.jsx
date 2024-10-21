@@ -34,10 +34,7 @@ export const getUniqueValues = (
     }
 
     const unique = [...new Set(newAr)] // удаление дубликатов
-    console.log("🚀 ~ unique:", i, unique)
-
     if (unique.length === 1 && unique[0] !== undefined &&  unique[0] !== 'subtotal') {
-      console.log("🚀 ~ unique ternar, we are here with:", unique)
       
       uniqueCols.push(unique ? [unique] : ['null']) // вернуть нужно массив массивов
       return 

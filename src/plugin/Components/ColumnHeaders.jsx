@@ -130,14 +130,9 @@ export const ColumnHeaders = ({
   }
 
   const colsMatrix = cartesian(...colsArr)
-  console.log("🚀 ~ colsMatrix:", colsMatrix)
-  console.log("🚀 ~ colsMatrix dims:", dims)
-  console.log("🚀 ~ getMultiplicators(colsArr):", getMultiplicators(colsArr))
   const dedupedColsMatrix = dedupMatrix(colsMatrix, getMultiplicators(colsArr))
-  console.log("🚀 ~ dedupedColsMatrix:", dedupedColsMatrix)
   const colSpanMap = createColSpanMap(dedupedColsMatrix)
   const colsMatrixClean = createCleanDimsMatrix(dedupedColsMatrix)
-  console.log("🚀 ~ colsMatrixClean:", colsMatrixClean)
   
   return colsArr.map((colsRow, i) => {
     return (
