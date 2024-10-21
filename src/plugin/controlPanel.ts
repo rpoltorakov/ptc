@@ -71,10 +71,10 @@ const config: ControlPanelConfig = {
             name: 'subtotalsRowsOn',
             config: {
               type: 'CheckboxControl',
-              label: 'Enable row subtotals',
+              label: 'Enable column subtotals',
               default: false,
               renderTrigger: true,
-              description: 'Enable row subtotals',
+              description: 'Enable column subtotals',
             },
           }
         ], [
@@ -82,10 +82,10 @@ const config: ControlPanelConfig = {
             name: 'subtotalsColsOn',
             config: {
               type: 'CheckboxControl',
-              label: 'Enable column subtotals',
+              label: 'Enable row subtotals',
               default: false,
               renderTrigger: true,
-              description: 'Enable column subtotals',
+              description: 'Enable row subtotals',
             },
           },
         ],
